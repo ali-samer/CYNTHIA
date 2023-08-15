@@ -1,4 +1,4 @@
-#include "CYNTHIA.h"
+#include "CYNTHIA/Core/EntryPoint.h"
 
 class Sandbox : public Cynthia::Application
 {

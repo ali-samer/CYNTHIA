@@ -1,0 +1,3 @@
+[submodule "CYNTHIA/vendor/spdlog"]
+	path = CYNTHIA/vendor/spdlog
+	url = https://github.com/gabime/spdlog.git
