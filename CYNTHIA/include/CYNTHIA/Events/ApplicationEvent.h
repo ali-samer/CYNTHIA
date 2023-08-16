@@ -42,7 +42,7 @@ namespace Cynthia
 		WindowCloseEvent ( ) { }
 
 		EVENT_CLASS_TYPE( WindowClose )
-		EVENT_CLASS_CATEGORY( Application )
+		EVENT_CLASS_CATEGORY( Application  )
 	};
 
 	class AppTickEvent : public Event
