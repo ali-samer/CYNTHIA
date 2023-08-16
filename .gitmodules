@@ -4,3 +4,6 @@
 [submodule "CYNTHIA/Vendor/glfw"]
 	path = CYNTHIA/Vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "CYNTHIA/vendor/glfw"]
+	path = CYNTHIA/vendor/glfw
+	url = https://github.com/glfw/glfw.git
