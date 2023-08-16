@@ -2,8 +2,8 @@
 // Created by Samer Ali on 8/14/23.
 //
 
-#ifndef CYNTHIA_SRC_CYNTHIA_CORE_ENTRYPOINT_H
-#define CYNTHIA_SRC_CYNTHIA_CORE_ENTRYPOINT_H
+#ifndef CYNTHIA_CORE_ENTRYPOINT_H
+#define CYNTHIA_CORE_ENTRYPOINT_H
 
 
 #include "CYNTHIA/Cynthia.h"
@@ -27,4 +27,4 @@ int main(int argc, char** argv)
 }
 
 
-#endif //CYNTHIA_SRC_CYNTHIA_CORE_ENTRYPOINT_H
+#endif //CYNTHIA_CORE_ENTRYPOINT_H

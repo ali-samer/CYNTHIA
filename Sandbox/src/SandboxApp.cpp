@@ -15,7 +15,7 @@ public:
 
 };
 
-Cynthia::Application* Cynthia::CreateApplication ( )
+Sandbox::Application* Cynthia::CreateApplication ( )
 {
 	return new Sandbox();
 }

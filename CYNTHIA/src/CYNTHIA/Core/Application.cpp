@@ -3,7 +3,8 @@
 //
 
 #include "CYNTHIA/Core/Application.h"
-
+#include "CYNTHIA/Events/ApplicationEvent.h"
+#include "CYNTHIA/Core/Log.h"
 
 namespace Cynthia
 {
@@ -19,6 +20,9 @@ namespace Cynthia
 
 	void Application::Run ( )
 	{
+		WindowResizeEvent e(1280, 720);
+		CY_TRACE(e);
+
 		while(true);
 	}
 } // Cynthia

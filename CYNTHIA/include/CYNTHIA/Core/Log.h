@@ -1,11 +1,12 @@
 //
 // Created by Samer Ali on 8/15/23.
 //
-#ifndef CYNTHIA_CYNTHIA_SRC_CYNTHIA_CORE_LOG_H
-#define CYNTHIA_CYNTHIA_SRC_CYNTHIA_CORE_LOG_H
+#ifndef CYNTHIA_CORE_LOG_H
+#define CYNTHIA_CORE_LOG_H
 
 #include "CYNTHIA/Cynthia.h"
 #include "spdlog/spdlog.h"
+#include "spdlog/fmt/ostr.h"
 #include <memory>
 
 namespace Cynthia
@@ -43,4 +44,4 @@ namespace Cynthia
 #define CY_TRACE( ... )             ::Cynthia::Log::GetClientLogger()->trace(__VA_ARGS__)
 #define CY_DEBUG( ... )             ::Cynthia::Log::GetClientLogger()->debug(__VA_ARGS__)
 
-#endif //CYNTHIA_CYNTHIA_SRC_CYNTHIA_CORE_LOG_H
+#endif //CYNTHIA_CORE_LOG_H

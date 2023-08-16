@@ -2,8 +2,10 @@
 // Created by Samer Ali on 8/14/23.
 //
 
-#ifndef CYNTHIA_SRC_CYNTHIA_APPLICATION_H
-#define CYNTHIA_SRC_CYNTHIA_APPLICATION_H
+#ifndef CYNTHIA_CORE_APPLICATION_H
+#define CYNTHIA_CORE_APPLICATION_H
+
+#include "../Events/Event.h"
 
 namespace Cynthia
 {
@@ -18,8 +20,8 @@ namespace Cynthia
 
 	};
 
-	Application* CreateApplication();
+	class Application* CreateApplication();
 
 } // Cynthia
 
-#endif //CYNTHIA_SRC_CYNTHIA_APPLICATION_H
+#endif //CYNTHIA_CORE_APPLICATION_H
