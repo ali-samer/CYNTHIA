@@ -5,7 +5,7 @@
 #include "CYNTHIA/Core/Application.h"
 #include "CYNTHIA/Events/ApplicationEvent.h"
 #include "CYNTHIA/Core/Log.h"
-#include "GLFW/glfw3native.h"
+
 namespace Cynthia
 {
 	Application::Application ( )
