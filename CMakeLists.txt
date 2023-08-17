@@ -26,11 +26,21 @@ include_directories(CYNTHIA/include)
 include_directories(CYNTHIA/vendor/glfw/include)
 include_directories(CYNTHIA/vendor/spdlog/include)
 
+add_compile_definitions(CY_ENABLE_ASSERTS)
+add_compile_definitions(CY_ENABLE_USEFUL_MACROS)
+
+if (WIN32)
+    add_compile_definitions(CY_ENABLE_ASSERTS_WIN32)
+else ()
+    add_compile_definitions(CY_ENABLE_ASSERTS_DARWIN)
+endif ()
+
+
 add_executable(CYNTHIA_EXE
         Sandbox/src/SandboxApp.cpp
         CYNTHIA/src/CYNTHIA/Core/Application.cpp
         CYNTHIA/src/CYNTHIA/Core/Log.cpp
-        )
+        CYNTHIA/src/CYNTHIA/Core/Window.cpp CYNTHIA/src/Platform/MacWindow.cpp CYNTHIA/include/Platform/MacWindow.h CYNTHIA/src/Platform/Win32Window.cpp CYNTHIA/include/Platform/Win32Window.h)
 
 
 

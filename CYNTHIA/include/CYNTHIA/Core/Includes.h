@@ -19,8 +19,15 @@
 #include <fstream>
 #include <filesystem>
 #include <sstream>
+#include <string_view>
 
 
-#define SHIFT( X ) (1 << X)
+#ifdef CY_ENABLE_USEFUL_MACROS
+	#define CY_SHIFT( X ) (1 << X)
+
+	#define CY_EXPAND_MACRO(X) X
+	#define CY_STRINGIFY_MACRO(X) #X
+	#define CY_CONCAT_MACRO(X, Y) X##Y
+#endif // CY_ENABLE_USEFUL_MACROS
 
 #endif //CYNTHIA_CORE_INCLUDES_H

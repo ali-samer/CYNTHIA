@@ -7,7 +7,7 @@
 
 
 #include "CYNTHIA/Core/Includes.h"
-
+//#define CY_SHIFT(X) (1 << X)
 
 namespace Cynthia
 {
@@ -15,11 +15,11 @@ namespace Cynthia
 	enum EventCategory
 	{
 		None = 0 ,
-		Application = SHIFT( 0 ) ,
-		Input       = SHIFT( 1 ) ,
-		Keyboard    = SHIFT( 2 ) ,
-		Mouse       = SHIFT( 3 ) ,
-		MouseButton = SHIFT( 4 ) ,
+		Application = CY_SHIFT( 0 ) ,
+		Input       = CY_SHIFT( 1 ) ,
+		Keyboard    = CY_SHIFT( 2 ) ,
+		Mouse       = CY_SHIFT( 3 ) ,
+		MouseButton = CY_SHIFT( 4 ) ,
 
 	};
 
