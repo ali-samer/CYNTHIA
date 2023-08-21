@@ -5,6 +5,7 @@ project(CYNTHIA)
 find_package(OpenGL REQUIRED)
 
 include(CheckIncludeFile)
+include(misc/CMakeTextColors.txt)
 
 check_include_file(malloc/malloc.h HAVE_MALLOC_MALLOC_H)
 
@@ -40,8 +41,9 @@ add_executable(CYNTHIA_EXE
         Sandbox/src/SandboxApp.cpp
         CYNTHIA/src/CYNTHIA/Core/Application.cpp
         CYNTHIA/src/CYNTHIA/Core/Log.cpp
-        CYNTHIA/src/CYNTHIA/Core/Window.cpp CYNTHIA/src/Platform/MacWindow.cpp CYNTHIA/include/Platform/MacWindow.h CYNTHIA/src/Platform/Win32Window.cpp CYNTHIA/include/Platform/Win32Window.h)
-
+        CYNTHIA/src/CYNTHIA/Core/Window.cpp
+        CYNTHIA/src/Platform/MacWindow.cpp
+        CYNTHIA/src/Platform/Win32Window.cpp)
 
 
 target_link_libraries(CYNTHIA_EXE

@@ -20,7 +20,7 @@ namespace Cynthia
 
 	  void Run();
 	private:
-		std::unique_ptr<Cynthia::Window> window;
+		std::unique_ptr<Window> window;
 		bool running = true;
 
 	};

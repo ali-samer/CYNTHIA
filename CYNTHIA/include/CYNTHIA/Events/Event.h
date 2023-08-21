@@ -7,7 +7,6 @@
 
 
 #include "CYNTHIA/Core/Includes.h"
-//#define CY_SHIFT(X) (1 << X)
 
 namespace Cynthia
 {
