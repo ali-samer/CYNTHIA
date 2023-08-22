@@ -13,7 +13,7 @@ We will use CYNTHIA to recreate a simple version of the [terrain navigation syst
 - Refine CYNTHIA's algorithms over multiple iterations and types of terrain. Evaluate landing precision.
 - Expand the project by using a programmable drone platform and integrating waypoint navigation.
 
-### Features
+### CYNTHIA's Features
 * [&#x2713;] ~~Logging System~~ 
 * [&#x2713;] ~~Event System~~
 * [&#x2713;] ~~Platform Independent Window~~
