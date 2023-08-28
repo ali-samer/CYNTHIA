@@ -41,8 +41,8 @@ namespace Cynthia
 		MouseScrolled
 	};
 #define EVENT_CLASS_TYPE( T ) static EventType GetStaticType() { return EventType::T; } \
-                            virtual EventType getEventType() const override { return GetStaticType(); } \
-                            virtual const char* getName() const override { return #T; }
+                              virtual EventType getEventType() const override { return GetStaticType(); } \
+                              virtual const char* getName() const override { return #T; }
 
 #define EVENT_CLASS_CATEGORY( C ) virtual int getCategoryFlags() const override { return C; }
 
@@ -57,7 +57,7 @@ namespace Cynthia
 
 		inline bool isInCategory ( EventCategory category ) { return getCategoryFlags( ) & category; }
 	protected:
-		bool handled = false; //check if an event has been handled
+		bool m_handled = false; //check if an m_event has been m_handled
 	};
 
 	class EventDispatcher
@@ -66,19 +66,19 @@ namespace Cynthia
 		using EventFn = std::function< bool ( T & ) >;
 	public:
 		EventDispatcher ( Event & event_ )
-			: event( event_ ) { }
+			: m_event( event_ ) { }
 		template < typename T >
 		bool dispatch ( EventFn< T > func )
 		{
-			if ( event.getEventType( ) == T::GetStaticType( ) )
+			if ( m_event.getEventType( ) == T::GetStaticType( ) )
 			{
-				event.handled = func( *( T* ) &event );
+				m_event.m_handled = func( *( T* ) &m_event );
 				return true;
 			}
 			return false;
 		}
 	private:
-		Event & event;
+		Event & m_event;
 	};
 
 	inline std::ostream & operator<< ( std::ostream & os , const Event & event )

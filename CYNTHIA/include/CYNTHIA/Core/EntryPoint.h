@@ -12,15 +12,6 @@
 int main(int argc, char** argv)
 {
 	Cynthia::Log::Init();
-	CY_CORE_WARN("Initialized Log!");
-	CY_CORE_INFO("INFO: "  );
-	CY_CORE_TRACE("TRACE: ");
-	CY_CORE_ERROR("ERROR: ");
-	CY_CORE_CRITICAL("CRITICAL: ");
-	CY_CORE_DEBUG("DEBUG: ");
-	int a = 5;
-	CY_INFO("Hello! Var {0}", a);
-
 	auto app = Cynthia::CreateApplication();
 	app->Run();
 	delete app;

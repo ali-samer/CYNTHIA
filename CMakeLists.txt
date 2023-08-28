@@ -5,7 +5,6 @@ project(CYNTHIA)
 find_package(OpenGL REQUIRED)
 
 include(CheckIncludeFile)
-include(misc/CMakeTextColors.txt)
 
 check_include_file(malloc/malloc.h HAVE_MALLOC_MALLOC_H)
 
@@ -20,6 +19,7 @@ if(NOT HAVE_MALLOC_MALLOC_H)
         message(FATAL_ERROR "Could not find malloc/malloc.h")
     endif()
 endif()
+
 
 
 add_subdirectory(CYNTHIA/vendor/glfw)
