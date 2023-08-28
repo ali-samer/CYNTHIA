@@ -23,8 +23,16 @@ namespace Cynthia
 
 	}
 
+	bool Application::onWindowClose ( Cynthia::WindowCloseEvent & event )
+	{
+		m_running = false;
+		return true;
+	}
+
 	void Application::OnEvent ( Event & event )
 	{
+		EventDispatcher dispatcher(event);
+		dispatcher.dispatch<WindowCloseEvent>( BIND_EVENT_FN(onWindowClose));
 		CY_CORE_TRACE("{0}", event);
 	}
 
@@ -35,7 +43,7 @@ namespace Cynthia
 
 		while(m_running)
 		{
-			glClearColor(1,0,1,1);
+			glClearColor(0.5f,0.5f,0.5f,1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 			m_window->onUpdate();
 		}

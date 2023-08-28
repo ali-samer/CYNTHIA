@@ -6,6 +6,7 @@
 #define CYNTHIA_CORE_APPLICATION_H
 
 #include "../Events/Event.h"
+#include "../Events/ApplicationEvent.h"
 #include "CYNTHIA/Core/Window.h"
 
 
@@ -21,6 +22,7 @@ namespace Cynthia
 	  void Run();
 	  void OnEvent(Event& event);
 	private:
+		bool onWindowClose(WindowCloseEvent& event);
 		std::unique_ptr<Window> m_window;
 		bool  m_running = true;
 
