@@ -22,11 +22,11 @@ namespace Cynthia
 
 		void onUpdate ( ) const override;
 
-		inline unsigned int getWidth ( ) const override { return data.width; }
-		inline unsigned int getHeight ( ) const override { return data.height; }
+		inline unsigned int getWidth ( ) const override { return m_data.width; }
+		inline unsigned int getHeight ( ) const override { return m_data.height; }
 
 		// attributes
-		inline void setEventCallback ( const EventCallBackFunc & callback ) override { data.eventCallBack = callback; }
+		inline void setEventCallback ( const EventCallBackFunc & callback ) override { m_data.eventCallBack = callback; }
 		void setVSync ( bool enabled ) override;
 		bool isVSync ( ) const override;
 
@@ -34,7 +34,7 @@ namespace Cynthia
 		virtual void init ( const WindowProps & props );
 		virtual void shutdown ( );
 	private:
-		GLFWwindow* window;
+		GLFWwindow* m_window;
 
 		struct WindowData
 		{
@@ -44,7 +44,7 @@ namespace Cynthia
 			EventCallBackFunc eventCallBack;
 		};
 
-		WindowData data;
+		WindowData m_data;
 	};
 }
 

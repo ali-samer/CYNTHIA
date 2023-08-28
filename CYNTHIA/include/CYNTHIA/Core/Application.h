@@ -5,7 +5,7 @@
 #ifndef CYNTHIA_CORE_APPLICATION_H
 #define CYNTHIA_CORE_APPLICATION_H
 
-//#include "../Events/Event.h"
+#include "../Events/Event.h"
 #include "CYNTHIA/Core/Window.h"
 
 
@@ -19,9 +19,10 @@ namespace Cynthia
 	  virtual ~Application();
 
 	  void Run();
+	  void OnEvent(Event& event);
 	private:
-		std::unique_ptr<Window> window;
-		bool running = true;
+		std::unique_ptr<Window> m_window;
+		bool  m_running = true;
 
 	};
 
