@@ -56,8 +56,8 @@ namespace Cynthia
 		virtual std::string toString ( ) const { return getName( ); }
 
 		inline bool isInCategory ( EventCategory category ) { return getCategoryFlags( ) & category; }
-	protected:
-		bool m_handled = false; //check if an m_event has been m_handled
+		bool m_handled = false;
+		//check if an m_event has been m_handled
 	};
 
 	class EventDispatcher

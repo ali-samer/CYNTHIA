@@ -43,7 +43,9 @@ add_executable(CYNTHIA_EXE
         CYNTHIA/src/CYNTHIA/Core/Log.cpp
         CYNTHIA/src/CYNTHIA/Core/Window.cpp
         CYNTHIA/src/Platform/MacWindow.cpp
-        CYNTHIA/src/Platform/Win32Window.cpp)
+        CYNTHIA/src/Platform/Win32Window.cpp
+        CYNTHIA/src/CYNTHIA/Core/LayerStack.cpp
+        CYNTHIA/src/CYNTHIA/Core/Layer.cpp)
 
 
 target_link_libraries(CYNTHIA_EXE

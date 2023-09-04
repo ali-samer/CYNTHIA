@@ -7,6 +7,7 @@
 
 #include "../Events/Event.h"
 #include "../Events/ApplicationEvent.h"
+#include "LayerStack.h"
 #include "CYNTHIA/Core/Window.h"
 
 
@@ -21,10 +22,14 @@ namespace Cynthia
 
 	  void Run();
 	  void OnEvent(Event& event);
+
+	  void PushLayer(Layer* layer);
+	  void PushOverlay(Layer* overlay);
 	private:
 		bool onWindowClose(WindowCloseEvent& event);
 		std::unique_ptr<Window> m_window;
 		bool  m_running = true;
+		LayerStack m_layerStack;
 
 	};
 

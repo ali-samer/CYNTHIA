@@ -23,6 +23,16 @@ namespace Cynthia
 
 	}
 
+	void Application::PushLayer ( Cynthia::Layer* layer )
+	{
+		m_layerStack.pushLayer(layer);
+	}
+
+	void Application::PushOverlay ( Cynthia::Layer* overlay )
+	{
+		m_layerStack.pushOverlay(overlay);
+	}
+
 	bool Application::onWindowClose ( Cynthia::WindowCloseEvent & event )
 	{
 		m_running = false;
@@ -34,6 +44,13 @@ namespace Cynthia
 		EventDispatcher dispatcher(event);
 		dispatcher.dispatch<WindowCloseEvent>( BIND_EVENT_FN(onWindowClose));
 		CY_CORE_TRACE("{0}", event);
+
+		for(auto i = m_layerStack.end(); i != m_layerStack.begin();)
+		{
+			(*--i)->onEvent(event);
+			if(event.m_handled)
+				break;
+		}
 	}
 
 	void Application::Run ( )
@@ -45,6 +62,8 @@ namespace Cynthia
 		{
 			glClearColor(0.5f,0.5f,0.5f,1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
+			for(Layer* layer : m_layerStack)
+					layer->onUpdate();
 			m_window->onUpdate();
 		}
 

@@ -135,7 +135,6 @@ namespace Cynthia
 		  WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
 		  MouseMovedEvent event(static_cast<float>(xPos), static_cast<float>(yPos));
 		  data.eventCallBack(event);
-
 		});
 	}
 
