@@ -7,3 +7,6 @@
 [submodule "CYNTHIA/vendor/glfw"]
 	path = CYNTHIA/vendor/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "CYNTHIA/vendor/imgui"]
+	path = CYNTHIA/vendor/imgui
+	url = https://github.com/ocornut/imgui.git

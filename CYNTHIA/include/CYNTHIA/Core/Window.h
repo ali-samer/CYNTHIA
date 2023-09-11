@@ -9,6 +9,7 @@
 //#include "CYNTHIA/Core/Includes.h"
 
 #include "CYNTHIA/Events/Event.h"
+#include "GLFW/glfw3.h"
 
 
 namespace Cynthia
@@ -39,6 +40,7 @@ namespace Cynthia
 
 		virtual unsigned int getWidth ( ) const = 0;
 		virtual unsigned int getHeight ( ) const = 0;
+		virtual GLFWwindow* getWindow( ) const = 0;
 
 		virtual void setEventCallback ( const EventCallBackFunc & callback ) = 0;
 		virtual void setVSync ( bool enabled ) = 0;

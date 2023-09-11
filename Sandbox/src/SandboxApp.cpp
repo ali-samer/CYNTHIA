@@ -22,6 +22,7 @@ public:
   Sandbox()
   {
 	  PushLayer(new ExampleLayer());
+	  PushOverlay(new Cynthia::ImGuiLayer());
   }
 
   ~Sandbox()

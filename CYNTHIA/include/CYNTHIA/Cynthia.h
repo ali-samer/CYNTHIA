@@ -9,6 +9,7 @@
 #include "CYNTHIA/Core/Application.h"
 #include "CYNTHIA/Core/Layer.h"
 #include "CYNTHIA/Core/Log.h"
+#include "CYNTHIA/GUI/ImGuiLayer.h"
 
 //#include "CYNTHIA/Events/ApplicationEvent.h"
 //#include "CYNTHIA/Events/Event.h"

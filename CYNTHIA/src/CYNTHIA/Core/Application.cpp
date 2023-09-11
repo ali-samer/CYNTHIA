@@ -5,15 +5,19 @@
 #include "CYNTHIA/Core/Application.h"
 #include "CYNTHIA/Events/ApplicationEvent.h"
 #include "CYNTHIA/Core/Log.h"
-#include <GLFW/glfw3.h>
-//#include "CYNTHIA/Core/Includes.h"
+#include "CYNTHIA/Core/Assert.h"
+#include <glad/glad.h>
 
 namespace Cynthia
 {
 
 	#define BIND_EVENT_FN(X) std::bind(&Application::X, this, std::placeholders::_1)
+	class Application* Application::s_instance = nullptr; // singleton design pattern to allow only one
+														  // instance of the class to exist
 	Application::Application ( )
 	{
+		CY_CORE_ASSERT(!s_instance, "Application already exists")
+		s_instance = this;
 		m_window = std::unique_ptr<Window>(Window::Create());
 		m_window->setEventCallback(BIND_EVENT_FN(OnEvent));
 	}
@@ -26,11 +30,13 @@ namespace Cynthia
 	void Application::PushLayer ( Cynthia::Layer* layer )
 	{
 		m_layerStack.pushLayer(layer);
+		layer->onAttach();
 	}
 
 	void Application::PushOverlay ( Cynthia::Layer* overlay )
 	{
 		m_layerStack.pushOverlay(overlay);
+		overlay->onAttach();
 	}
 
 	bool Application::onWindowClose ( Cynthia::WindowCloseEvent & event )

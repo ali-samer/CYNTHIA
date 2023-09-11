@@ -24,6 +24,7 @@ namespace Cynthia
 
 		inline unsigned int getWidth ( ) const override { return m_data.width; }
 		inline unsigned int getHeight ( ) const override { return m_data.height; }
+		inline GLFWwindow* getWindow() const override { return m_window; }
 
 		// attributes
 		inline void setEventCallback ( const EventCallBackFunc & callback ) override { m_data.eventCallBack = callback; }
