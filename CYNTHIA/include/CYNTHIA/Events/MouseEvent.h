@@ -16,7 +16,7 @@ namespace Cynthia
 			  mouse_y( y ) { }
 
 		inline float getX ( ) const { return mouse_x; }
-		inline float gety ( ) const { return mouse_y; }
+		inline float getY ( ) const { return mouse_y; }
 
 		std::string toString ( ) const override
 		{

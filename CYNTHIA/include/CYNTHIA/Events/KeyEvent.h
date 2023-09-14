@@ -9,7 +9,7 @@ namespace Cynthia
 	class KeyEvent : public Event
 	{
 	public:
-		inline int GetKeyCode() const { return key_code; }
+		inline int getKeyCode() const { return key_code; }
 		EVENT_CLASS_CATEGORY(Keyboard | Input)
 
 	protected:
@@ -49,6 +49,21 @@ namespace Cynthia
 		}
 		EVENT_CLASS_TYPE(KeyReleased)
 		KeyReleasedEvent(int keycode) : KeyEvent(keycode) {}
+	};
+
+	class KeyTypedEvent : public KeyEvent
+	{
+	public:
+		KeyTypedEvent(int keycode)
+			: KeyEvent(keycode) {}
+		std::string toString() const override
+		{
+			std::stringstream ss;
+			ss << "KeyTypedEvent : " << key_code;
+			return ss.str();
+		}
+		EVENT_CLASS_TYPE(KeyTyped)
+		KeyTypedEvent(char key) : KeyEvent((int)key) {}
 	};
 }
 

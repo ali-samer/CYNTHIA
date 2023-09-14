@@ -20,6 +20,7 @@
 #include <filesystem>
 #include <sstream>
 #include <string_view>
+#include "eigen/Eigen/Eigen"
 
 
 #ifdef CY_ENABLE_USEFUL_MACROS
@@ -30,4 +31,6 @@
 	#define CY_CONCAT_MACRO(X, Y) X##Y
 #endif // CY_ENABLE_USEFUL_MACROS
 
+
+#define CY_BIND_EVENT_FN(X) std::bind(&X, this, std::placeholders::_1)
 #endif //CYNTHIA_CORE_INCLUDES_H

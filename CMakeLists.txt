@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 17)
+cmake_policy(SET CMP0042 NEW)
 project(CYNTHIA)
 
 find_package(OpenGL REQUIRED)
@@ -21,9 +22,10 @@ if(NOT HAVE_MALLOC_MALLOC_H)
 endif()
 
 
-
+add_subdirectory(CYNTHIA/vendor/eigen)
 add_subdirectory(CYNTHIA/vendor/glfw)
 include_directories(CYNTHIA/include)
+include_directories(CYNTHIA/vendor)
 include_directories(CYNTHIA/vendor/glfw/include)
 include_directories(CYNTHIA/vendor/spdlog/include)
 include_directories(CYNTHIA/vendor/glad/include)
@@ -37,7 +39,7 @@ if (WIN32)
 else ()
     add_compile_definitions(CY_ENABLE_ASSERTS_DARWIN)
 endif ()
-add_compile_definitions(GL_SILENCE_DEPRECATION) #silence annoying gl deprecated warnings
+add_compile_definitions(GL_SILENCE_DEPRECATION) #silence annoying gl deprecation warnings
 add_compile_definitions(GLFW_INCLUDE_NONE) #GLAD will complain if GLFW include is enabled
 
 add_executable(CYNTHIA_EXE
@@ -58,6 +60,9 @@ add_executable(CYNTHIA_EXE
         CYNTHIA/vendor/imgui/imgui_widgets.cpp
         CYNTHIA/vendor/imgui/backends/imgui_impl_opengl3.cpp
         CYNTHIA/vendor/imgui/backends/imgui_impl_glfw.cpp
+        CYNTHIA/src/CYNTHIA/Image/Image.cpp
+        CYNTHIA/src/CYNTHIA/EigenUtils/EigenAliases.cpp
+        CYNTHIA/src/CYNTHIA/EigenUtils/EigenUtilities.cpp
 )
 
 

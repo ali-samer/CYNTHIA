@@ -10,3 +10,6 @@
 [submodule "CYNTHIA/vendor/imgui"]
 	path = CYNTHIA/vendor/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "CYNTHIA/vendor/eigen"]
+	path = CYNTHIA/vendor/eigen
+	url = https://github.com/PX4/eigen.git

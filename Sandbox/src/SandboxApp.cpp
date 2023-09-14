@@ -21,8 +21,8 @@ class Sandbox : public Cynthia::Application
 public:
   Sandbox()
   {
-	  PushLayer(new ExampleLayer());
-	  PushOverlay(new Cynthia::ImGuiLayer());
+//	  PushLayer(new ExampleLayer());
+	  PushLayer(new Cynthia::ImGuiLayer());
   }
 
   ~Sandbox()
