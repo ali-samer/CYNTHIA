@@ -11,7 +11,6 @@
 #include <functional>
 #include <utility>
 #include <cmath>
-#include <malloc/malloc.h>
 #include <vector>
 #include <iostream>
 #include <cstdlib>
@@ -20,7 +19,6 @@
 #include <filesystem>
 #include <sstream>
 #include <string_view>
-#include "eigen/Eigen/Eigen"
 
 
 #ifdef CY_ENABLE_USEFUL_MACROS

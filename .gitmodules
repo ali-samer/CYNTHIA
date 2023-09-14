@@ -13,3 +13,6 @@
 [submodule "CYNTHIA/vendor/eigen"]
 	path = CYNTHIA/vendor/eigen
 	url = https://github.com/PX4/eigen.git
+[submodule "CYNTHIA/vendor/pybind11"]
+	path = CYNTHIA/vendor/pybind11
+	url = https://github.com/pybind/pybind11.git

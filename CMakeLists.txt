@@ -24,6 +24,7 @@ endif()
 
 add_subdirectory(CYNTHIA/vendor/eigen)
 add_subdirectory(CYNTHIA/vendor/glfw)
+add_subdirectory(CYNTHIA/vendor/pybind11)
 include_directories(CYNTHIA/include)
 include_directories(CYNTHIA/vendor)
 include_directories(CYNTHIA/vendor/glfw/include)
