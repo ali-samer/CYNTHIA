@@ -9,7 +9,7 @@ include(CheckIncludeFile)
 
 check_include_file(malloc/malloc.h HAVE_MALLOC_MALLOC_H)
 
-if(NOT HAVE_MALLOC_MALLOC_H)
+if(NOT HAVE_MALLOC_MALLOC_H) # TODO: reference when writing package tests in cmake: must remove before releasing project
     find_path(MALLOC_INCLUDE_DIR malloc.h)
     message(STATUS "Attempting to find malloc.h")
     if(MALLOC_INCLUDE_DIR)
@@ -37,8 +37,10 @@ add_compile_definitions(CY_ENABLE_USEFUL_MACROS)
 
 if (WIN32)
     add_compile_definitions(CY_ENABLE_ASSERTS_WIN32)
+    add_compile_definitions(CY_PLATFORM_WINDOWS)
 else ()
     add_compile_definitions(CY_ENABLE_ASSERTS_DARWIN)
+    add_compile_definitions(CY_PLATFORM_DARWIN)
 endif ()
 add_compile_definitions(GL_SILENCE_DEPRECATION) #silence annoying gl deprecation warnings
 add_compile_definitions(GLFW_INCLUDE_NONE) #GLAD will complain if GLFW include is enabled
@@ -65,6 +67,7 @@ add_executable(CYNTHIA_EXE
         CYNTHIA/src/CYNTHIA/EigenUtils/EigenAliases.cpp
         CYNTHIA/src/CYNTHIA/EigenUtils/EigenUtilities.cpp
         CYNTHIA/src/Platform/Windows/WindowsInput.cpp
+        CYNTHIA/src/CYNTHIA/GUI/ImGUIBuild.cpp
 )
 
 

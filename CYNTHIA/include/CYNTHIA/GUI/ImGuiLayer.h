@@ -17,19 +17,13 @@ namespace Cynthia
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		void onAttach();
-		void onDetach();
-		void onUpdate();
-		void onEvent(Event& event);
-	private:
-		bool onMouseButtonPressedEvent(MouseButtonPressedEvent& event);
-		bool onMouseButtonReleasedEvent(MouseButtonReleasedEvent& event);
-		bool onMouseScrolledEvent(MouseScrolledEvent& event);
-		bool onMouseMovedEvent(MouseMovedEvent& event);
-		bool onKeyPressedEvent(KeyPressEvent& event);
-		bool onKeyReleasedEvent(KeyReleasedEvent& event);
-		bool onKeyTypedEvent(KeyTypedEvent& event);
-		bool onWindowResizeEvent(WindowResizeEvent& event);
+		virtual void onAttach() override;
+		virtual void onDetach() override;
+//		virtual void onUpdate() override;
+		virtual void onImGuiRender() override;
+
+		void begin();
+		void end();
 	private:
 		float m_time = 0.0f;
 

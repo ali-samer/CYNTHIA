@@ -21,6 +21,8 @@ namespace Cynthia
 		s_instance = this;
 		m_window = std::unique_ptr<Window>(Window::Create());
 		m_window->setEventCallback(BIND_EVENT_FN(OnEvent));
+		m_imGuiLayer = new ImGuiLayer;
+		PushOverlay(m_imGuiLayer);
 	}
 
 	Application::~Application()
@@ -68,14 +70,20 @@ namespace Cynthia
 
 		while(m_running)
 		{
-			glClearColor(0.5f,0.5f,0.5f,1.0f);
+			glClearColor(0.2f, 0.2f, 0.2f, 1.0f); // Dark Gray
 			glClear(GL_COLOR_BUFFER_BIT);
 			for(Layer* layer : m_layerStack)
 					layer->onUpdate();
+
+			m_imGuiLayer->begin();
+			for(Layer* layer: m_layerStack)
+				layer->onImGuiRender();
+			m_imGuiLayer->end();
 			auto [x, y] = Input::GetMousePos();
-			CY_CORE_TRACE("{0}, {1}", x, y);
+//			CY_CORE_TRACE("{0}, {1}", x, y);
 			m_window->onUpdate();
 		}
 
 	}
+
 } // Cynthia

@@ -9,7 +9,6 @@ namespace Cynthia
 
 	LayerStack::LayerStack ( )
 	{
-		m_layerInsert = m_layer.begin();
 	}
 
 	LayerStack::~LayerStack ( )
@@ -22,7 +21,8 @@ namespace Cynthia
 
 	void LayerStack::pushLayer ( Cynthia::Layer* layer )
 	{
-		m_layerInsert = m_layer.emplace(m_layerInsert, layer);
+		m_layer.emplace(m_layer.begin() + m_layerInsertIndex, layer);
+		m_layerInsertIndex++;
 	}
 
 	void LayerStack::pushOverlay ( Cynthia::Layer* overlay )
@@ -36,7 +36,7 @@ namespace Cynthia
 		if(it != m_layer.end())
 		{
 			m_layer.erase(it);
-			m_layerInsert--;
+			m_layerInsertIndex--;
 		}
 	}
 

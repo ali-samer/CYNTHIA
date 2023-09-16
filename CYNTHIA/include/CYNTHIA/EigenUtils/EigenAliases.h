@@ -7,7 +7,6 @@
 
 namespace Cynthia
 {
-
 	// Float matrices
 	using MatrixXf = Eigen::MatrixXf;
 

@@ -26,7 +26,7 @@ namespace Cynthia
 		std::vector<Layer*>::iterator end() { return m_layer.end(); }
 	private:
 		std::vector<Layer*> m_layer;
-		std::vector<Layer*>::iterator m_layerInsert;
+		unsigned int        m_layerInsertIndex;
 	};
 
 }
