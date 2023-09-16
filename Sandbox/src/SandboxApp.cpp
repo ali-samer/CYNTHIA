@@ -9,6 +9,9 @@ public:
 	void onUpdate() override
 	{
 		CY_INFO("ExampleLayer::Update");
+
+		if(Cynthia::Input::IsKeyPressed(CY_KEY_TAB))
+			CY_INFO("Tab key is pressed");
 	}
 
 	void onEvent(Cynthia::Event& event) override
@@ -21,7 +24,7 @@ class Sandbox : public Cynthia::Application
 public:
   Sandbox()
   {
-//	  PushLayer(new ExampleLayer());
+	  PushLayer(new ExampleLayer());
 	  PushLayer(new Cynthia::ImGuiLayer());
   }
 
