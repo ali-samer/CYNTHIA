@@ -6,7 +6,7 @@
 #define CYNTHIA_PLATFORM_WIN32WINDOW_H
 
 
-#include <GLFW/glfw3.h>
+#include "glfw/include/GLFW/glfw3.h"
 
 #include "CYNTHIA/Core/Window.h"
 

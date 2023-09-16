@@ -2,14 +2,14 @@
 // Created by Samer Ali on 8/17/23.
 //
 
-#include "Platform/Win32Window.h"
+#include "Platform/Windows/Win32Window.h"
 #include "CYNTHIA/Core/Log.h"
 #include "CYNTHIA/Core/Assert.h"
 
 #include "CYNTHIA/Events/MouseEvent.h"
 #include "CYNTHIA/Events/KeyEvent.h"
 #include "CYNTHIA/Events/ApplicationEvent.h"
-#include <glad/glad.h>
+#include "glad/include/glad/glad.h"
 
 
 namespace Cynthia

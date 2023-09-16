@@ -48,8 +48,8 @@ add_executable(CYNTHIA_EXE
         CYNTHIA/src/CYNTHIA/Core/Application.cpp
         CYNTHIA/src/CYNTHIA/Core/Log.cpp
         CYNTHIA/src/CYNTHIA/Core/Window.cpp
-        CYNTHIA/src/Platform/MacWindow.cpp
-        CYNTHIA/src/Platform/Win32Window.cpp
+        CYNTHIA/src/Platform/Mac/MacWindow.cpp
+        CYNTHIA/src/Platform/Windows/Win32Window.cpp
         CYNTHIA/src/CYNTHIA/Core/LayerStack.cpp
         CYNTHIA/src/CYNTHIA/Core/Layer.cpp
         CYNTHIA/vendor/glad/src/glad.c
@@ -64,6 +64,8 @@ add_executable(CYNTHIA_EXE
         CYNTHIA/src/CYNTHIA/Image/Image.cpp
         CYNTHIA/src/CYNTHIA/EigenUtils/EigenAliases.cpp
         CYNTHIA/src/CYNTHIA/EigenUtils/EigenUtilities.cpp
+        CYNTHIA/src/Platform/Windows/WindowsInput.cpp
+        CYNTHIA/include/Platform/Windows/WindowsInput.h
 )
 
 
