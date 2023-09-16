@@ -25,7 +25,7 @@ namespace Cynthia
 
 		ImGuiIO& io = ImGui::GetIO();
 
-		io.DisplaySize = ImVec2(Application::Get().getWindow().getWidth(), Application::Get().getWindow().getHeight());
+		io.DisplaySize = ImVec2( Application::Get( ).getWindowObj( ).getWidth(), Application::Get( ).getWindowObj( ).getHeight());
 
 		float time = (float)glfwGetTime();
 		io.DeltaTime = m_time > 0.0f ? (time - m_time) : (1.0f / 60.0f);
@@ -41,7 +41,7 @@ namespace Cynthia
 
 		ImGui::Render();
 //		int display_w, display_h;
-//		glfwGetFramebufferSize(Application::Get().getWindow().getWindow(), &display_w, &display_h);
+//		glfwGetFramebufferSize(Application::Get().getWindow().getWindowObj(), &display_w, &display_h);
 //		glViewport(0, 0, display_w, display_h);
 //		glClearColor(clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w);
 //		glClear(GL_COLOR_BUFFER_BIT);
@@ -63,7 +63,7 @@ namespace Cynthia
 
 		// sets up important callbacks
 		// and necessary hooks for use with opengl3
-		ImGui_ImplGlfw_InitForOpenGL( Application::Get( ).getWindow( ).getWindow() , true);
+		ImGui_ImplGlfw_InitForOpenGL( Application::Get( ).getWindowObj( ).getWindow() , true);
 		ImGui_ImplOpenGL3_Init("#version 410"); // initialize imgui with opengl 3 renderer -v 4.1
 
 

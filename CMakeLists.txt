@@ -65,7 +65,6 @@ add_executable(CYNTHIA_EXE
         CYNTHIA/src/CYNTHIA/EigenUtils/EigenAliases.cpp
         CYNTHIA/src/CYNTHIA/EigenUtils/EigenUtilities.cpp
         CYNTHIA/src/Platform/Windows/WindowsInput.cpp
-        CYNTHIA/include/Platform/Windows/WindowsInput.h
 )
 
 

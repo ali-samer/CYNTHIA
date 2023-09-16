@@ -26,7 +26,7 @@ namespace Cynthia
 	  void PushLayer(Layer* layer);
 	  void PushOverlay(Layer* overlay);
 	  inline static Application& Get() { return *s_instance; }
-	  inline Window& getWindow() { return *m_window; }
+	  inline Window& getWindowObj() { return *m_window; }
 	private:
 		static Application* s_instance;
 		bool onWindowClose(WindowCloseEvent& event);

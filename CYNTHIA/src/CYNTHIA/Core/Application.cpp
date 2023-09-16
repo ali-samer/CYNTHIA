@@ -6,6 +6,7 @@
 #include "CYNTHIA/Events/ApplicationEvent.h"
 #include "CYNTHIA/Core/Log.h"
 #include "CYNTHIA/Core/Assert.h"
+#include "CYNTHIA/Core/Input.h"
 #include <glad/glad.h>
 
 namespace Cynthia
@@ -49,6 +50,7 @@ namespace Cynthia
 	{
 		EventDispatcher dispatcher(event);
 		dispatcher.dispatch<WindowCloseEvent>( BIND_EVENT_FN(onWindowClose));
+		if(event.getEventType() != EventType::MouseMoved) // Mouse moved is handles by run()
 		CY_CORE_TRACE("{0}", event);
 
 		for(auto i = m_layerStack.end(); i != m_layerStack.begin();)
@@ -70,6 +72,8 @@ namespace Cynthia
 			glClear(GL_COLOR_BUFFER_BIT);
 			for(Layer* layer : m_layerStack)
 					layer->onUpdate();
+			auto [x, y] = Input::GetMousePos();
+			CY_CORE_TRACE("{0}, {1}", x, y);
 			m_window->onUpdate();
 		}
 

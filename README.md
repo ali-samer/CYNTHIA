@@ -18,9 +18,8 @@ We will use CYNTHIA to recreate a simple version of the [terrain navigation syst
 * [&#x2713;] ~~Event System~~
 * [&#x2713;] ~~Platform Independent Window~~
 * [ - ] User Graphics oct/7
-* [ - ] Image Processing Algorithms sept/9
-* [ - ] Recognition Algorithms sept/14
-* [ - ] File Parsings (XML, YAML, JSON) sept/14
-* [ - ] Cloud Integration sept/16
-* [ - ] cynthia microprocessor Dec/21
+* [ - ] Image Processing Algorithms oct/9
+* [ - ] Recognition Algorithms oct/14
+* [ - ] File Parsings (XML, YAML, JSON) oct/14
+* [ - ] Cloud Integration dec/16
 * [ - ] Driver for Arducam to cynthia microprocessor jan/23
