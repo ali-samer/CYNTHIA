@@ -3,10 +3,24 @@
 //
 #pragma once
 
+
 #include "eigen/Eigen/Eigen"
+
 
 namespace Cynthia
 {
+	template < typename T >
+	using Matrix = Eigen::Matrix< T , Eigen::Dynamic , Eigen::Dynamic >;
+
+	template < typename T >
+	using Vector = Eigen::Matrix< T , Eigen::Dynamic , 1 >;
+
+	template < typename T >
+	using RowVector = Eigen::Matrix< T , 1 , Eigen::Dynamic >;
+
+	// Unsigned char matrices
+	using MatrixXuc = Eigen::Matrix< unsigned char , Eigen::Dynamic , Eigen::Dynamic >;
+
 	// Float matrices
 	using MatrixXf = Eigen::MatrixXf;
 
@@ -18,6 +32,9 @@ namespace Cynthia
 
 	// Complex double matrices
 	using MatrixXcd = Eigen::MatrixXcd;
+
+	// Unsigned char vectors
+	using VectorXuc = Eigen::Matrix< unsigned char , Eigen::Dynamic , 1 >;
 
 	// Float vectors
 	using VectorXf = Eigen::VectorXf;
