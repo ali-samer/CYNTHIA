@@ -12,6 +12,7 @@
 #include "CYNTHIA/Core/MouseButtonCodes.h"
 #include "CYNTHIA/Core/Layer.h"
 #include "CYNTHIA/Core/Log.h"
+#include "CYNTHIA/Image/Image.h"
 #include "CYNTHIA/GUI/ImGuiLayer.h"
 #include "CYNTHIA/EigenUtils/EigenAliases.h"
 

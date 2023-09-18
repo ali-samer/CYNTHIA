@@ -18,6 +18,8 @@ namespace Cynthia
 	template < typename T >
 	using RowVector = Eigen::Matrix< T , 1 , Eigen::Dynamic >;
 
+	template < typename T >
+	using ImageMat = Matrix< Vector< Vector< T > > >;
 	// Unsigned char matrices
 	using MatrixXuc = Eigen::Matrix< unsigned char , Eigen::Dynamic , Eigen::Dynamic >;
 

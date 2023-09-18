@@ -24,7 +24,9 @@ endif()
 
 add_subdirectory(CYNTHIA/vendor/eigen)
 add_subdirectory(CYNTHIA/vendor/glfw)
+add_subdirectory(CYNTHIA/src/CYNTHIA/Image)
 add_subdirectory(CYNTHIA/vendor/pybind11)
+
 include_directories(CYNTHIA/include)
 include_directories(CYNTHIA/vendor)
 include_directories(CYNTHIA/vendor/glfw/include)
@@ -75,4 +77,5 @@ target_link_libraries(CYNTHIA_EXE
         PRIVATE
         OpenGL::GL
         glfw
+        stb_image
         )

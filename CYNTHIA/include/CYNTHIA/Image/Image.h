@@ -44,6 +44,7 @@ namespace Color
 
 
 #include <utility>
+#include "CYNTHIA/Core/Utility.h"
 #include "../EigenUtils/EigenAliases.h"
 #include "load.h"
 //#include <pybind11/pybind11.h>
@@ -55,25 +56,27 @@ namespace Cynthia
 	{
 	public:
 		Image ( );
-		explicit Image ( const char* filename , int color_channel = 3 /* RGB */);
+		explicit Image ( const char* filepath , int color_channel = 3 /* RGB */);
 		~Image ( );
-		Matrix< Vector< T > > loadImg ( std::string filename , int color_channel = 3 );
+		ImageMat< T > loadImg ( std::string filename , int color_channel = 3 );
 
 		Vector< T > operator[] ( int i );
 		bool operator== ( const Image img );
+		bool operator!= ( const Image img );
 		void operator++ ( int );
 		void operator-- ( int );
 
 
-		T dump ( );
+		T* dump ( );
 	private:
-		Matrix< Vector< T > > image;
-		std::unique_ptr< T >  pixels;
+		ImageMat< T >        m_image;
+		std::unique_ptr< T > m_pixels;
 
-		int                   texture_loaded;
-		int                   width;
-		int                   height;
-		int                   color_channels;
+		int m_texture_loaded;
+		int m_width;
+		int m_height;
+		int m_color_channel;
 
 	};
+
 }
