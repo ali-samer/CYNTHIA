@@ -1,6 +1,10 @@
-//
-// Created by Samer Ali on 9/13/23.
-//
+/**
+ * @file Image.h
+ * @brief Image class definition
+ * @author Samer Ali
+ * @date September 2023
+*/
+
 #if 0
 Copyright (c) 2023 Samer Ali and Rahul Singh
 
@@ -38,15 +42,18 @@ namespace Cynthia
 {
 	enum class Channel : int
 	{
-		RGB ,
-		RGBA ,
-		HSV ,
-		YUV ,
-		CMYK ,
-		LAB ,
-		HSL ,
-		GRAYSCALE
+		RGB       = 3,
+		RGBA      = 4,
+		HSV       = 3,
+		YUV       = 3,
+		CMYK      = 4,
+		LAB       = 3,
+		HSL       = 3,
+		GRAYSCALE = 1,
+		NULL_CH   = 0
 	};
+
+	#if 0 // reference this data structure for image data
 	struct ImageData
 	{
 		GLenum texture_internal_fmt;
@@ -67,9 +74,10 @@ namespace Cynthia
 		int  error_code { };
 		const char* error_msg;
 
-		void reset();
+		void reset ( );
 	};
-
+	#endif
+	#if 0
 	template < typename T = unsigned char >
 	class Image
 	{
@@ -93,6 +101,7 @@ namespace Cynthia
 		void loadData();
 		void free();
 		void reset();
+		void texture();
 	public:
 		ImageData* m_data;
 	private:
@@ -104,6 +113,95 @@ namespace Cynthia
 		int m_height;
 		int m_color_channel;
 
+	};
+	#endif
+	template < typename T >
+	class Image
+	{
+	public:
+
+		Image ( );
+
+		Image ( const std::string & filepath , const Channel & colo_channel = Channel::RGB );
+
+		~Image ( );
+
+		/**
+		 * Overloaded [] operator to access image rows
+		 *
+		 * @param i Row index
+		 * @return Vector of Vectors containing pixel values for row i
+		*/
+		Vector< T > operator[] ( int i );
+
+		/**
+		 * Equality operator overload
+		 *
+		 * @param img Image to compare
+		 * @return True if images are equal, false otherwise
+		*/
+		bool operator== ( const Image & img );
+
+		/**
+		 * Inequality operator overload
+		 *
+		 * @param img Image to compare
+		 * @return True if images are not equal, false otherwise
+		*/
+		bool operator!= ( const Image & img );
+
+		/**
+		 * Pre-increment operator overload
+		 *
+		 * Increments all pixel values by 1
+		*/
+		[[noreturn]] void operator++ ( int );
+
+		/**
+		 * Pre-decrement operator overload
+		 *
+		 * Decrements all pixel values by 1
+		*/
+		[[noreturn]] void operator-- ( int );
+
+		/**
+		 * Loads image from file
+		 * @param filepath Path to image file, channel flag
+		 * @return True if loaded successfully, false otherwise
+		*/
+		static Image< T > loadFromFile ( const std::string & filepath , Channel channel = Channel::RGB );
+
+		/**
+		 * Gets pointer to pixel data
+		 * @return Pointer to pixel data
+		*/
+		std::shared_ptr< T > getPixels ( ) const;
+
+	private:
+
+		/**
+		 * Loads image texture
+		 */
+		void loadTexture ( );
+
+		/**
+		 * Frees image data
+		 */
+		void freeData ( );
+
+		/**
+		 * Resets image data
+		 * essential after freeing image data
+		 */
+		void resetData ( );
+
+		ImageMat< T >        m_image;
+		std::unique_ptr< T > m_pixels;
+		int                  m_width;
+		int                  m_height;
+		bool                 m_textureLoaded;
+		GLuint               m_textureId;
+		Channel              m_colorChannel;
 	};
 
 }
