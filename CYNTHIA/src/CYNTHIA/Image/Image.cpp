@@ -6,14 +6,30 @@
 namespace Cynthia
 {
 	template <typename T>
-	Image<T>::Image ( ) : m_width(0), m_height(0), m_color_channel(0), m_pixels( nullptr )
+	Image<T>::Image ( ) : m_texture_loaded(0), m_width(0), m_height(0), m_color_channel(0), m_pixels( nullptr )
 	{
-		m_image.setZero();
+		m_image = NULL;
+		m_data = nullptr;
 	}
+
 	template <typename T>
-	Image<T>::Image ( const char* filepath , int color_chanel )
+	Image<T>::Image ( const char* filepath , Channel color_chanel )
 	{
-		this->m_image = loadImg( filepath, color_chanel);
+		*this = LoadImg( filepath, color_chanel);
+		this->loadData();
+	}
+
+	template <typename T>
+	Image<T>::~Image ( )
+	{
+		this->free();
+		this->reset();
+	}
+
+	template <typename T>
+	Vector<T> Image<T>::operator[] ( int i )
+	{
+		return m_image[i];
 	}
 
 	template < typename T >
@@ -77,37 +93,44 @@ namespace Cynthia
 	}
 
 	template <typename T>
-	ImageMat<T> Image<T>::loadImg ( std::string filename , int ch )
+	Image<T> Image<T>::LoadImg ( std::string filename , Channel _ch )
 	{
+		int ch = static_cast<int>(_ch);
+		Image temp;
 		if(!cute::is_file(filename.c_str()))
 		{
 			assert("filepath not recognized");
 		}
 		ImageMat<T> image_mat;
-		#if 0
-		m_pixels = (std::unique_ptr<T>) stbi_load(filename.c_str(), &m_width, &m_height, &m_color_channel, ch);
-		int length = m_width * m_height * ch;
-		for(int i = 0; i < m_height; i++)
+		#if 1 // TODO: used to comment out code. remove when no longer in need
+		temp.m_pixels = (std::unique_ptr<T>) stbi_load(filename.c_str(), &temp.m_width, &temp.m_height, &temp.m_color_channel, ch);
+		for(int i = 0; i < temp.m_height; i++)
 		{
-			for(int j = 0; j < m_width; j++)
+			for(int j = 0; j < temp.m_width; j++)
 			{
 				Vector<T> pixel_values;
 				pixel_values.resize(ch);
 				for(int k = 0; k < ch; k++)
 				{
-					pixel_values[k] = m_pixels[i+j];
+					pixel_values[k] = temp.m_pixels[i+j];
 				}
-				m_image[i][j] = pixel_values;
+				temp.m_image[i][j] = pixel_values;
 			}
 		}
 		#endif
-		return image_mat;
+		return temp;
 	}
 
 	template <typename T>
-	Vector<T> Image<T>::operator[] ( int i )
+	void Image<T>::free()
 	{
-		return m_image[i];
+		stbi_image_free(m_pixels);
+	}
+
+	template <typename T>
+	void Image<T>::reset()
+	{
+		m_data->reset();
 	}
 }
 #endif

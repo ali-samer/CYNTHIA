@@ -26,10 +26,17 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #pragma once
 
-namespace Color
-{
 
-	enum Channel : int
+#include <utility>
+#include "glad/glad.h"
+#include "CYNTHIA/Core/Utility.h"
+#include "../EigenUtils/EigenAliases.h"
+#include "load.h"
+//#include <pybind11/pybind11.h>
+
+namespace Cynthia
+{
+	enum class Channel : int
 	{
 		RGB ,
 		RGBA ,
@@ -40,25 +47,38 @@ namespace Color
 		HSL ,
 		GRAYSCALE
 	};
-}
+	struct ImageData
+	{
+		GLenum texture_internal_fmt;
+		GLenum original_pixel_fmt;
+		GLenum texture_data_t;
+		GLenum original_data_t;
+		GLuint texture;
+		uint8_t* pixels { NULL };
 
+		int texture_loaded { };
+		int length = width * height * num_color_ch;
+		int width { };
+		int height { };
+		int num_color_ch { };
+		int num_mipmap_lvls { };
 
-#include <utility>
-#include "CYNTHIA/Core/Utility.h"
-#include "../EigenUtils/EigenAliases.h"
-#include "load.h"
-//#include <pybind11/pybind11.h>
+		bool flip_vertically;
+		int  error_code { };
+		const char* error_msg;
 
-namespace Cynthia
-{
+		void reset();
+	};
+
 	template < typename T = unsigned char >
 	class Image
 	{
 	public:
+		explicit Image ( const char* filepath , Channel flag = Channel::RGB );
 		Image ( );
 		explicit Image ( const char* filepath , int color_channel = 3 /* RGB */);
 		~Image ( );
-		ImageMat< T > loadImg ( std::string filename , int color_channel = 3 );
+		static Image< T > LoadImg ( std::string filename , Channel color_channel = Channel::RGB );
 
 		Vector< T > operator[] ( int i );
 		bool operator== ( const Image img );
@@ -68,6 +88,13 @@ namespace Cynthia
 
 
 		T* dump ( );
+
+	private:
+		void loadData();
+		void free();
+		void reset();
+	public:
+		ImageData* m_data;
 	private:
 		ImageMat< T >        m_image;
 		std::unique_ptr< T > m_pixels;

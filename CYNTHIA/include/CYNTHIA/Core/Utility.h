@@ -39,8 +39,8 @@
 //#define YAML 0x2D2D2D // ---
 //#define MPEG 0x000001BA // Pack header
 //#define WEBM 0x1A45DFA3
-#define RGBA 4
-#define RGB 3
+//#define RGBA 4
+//#define RGB 3
 
 
 namespace cute
