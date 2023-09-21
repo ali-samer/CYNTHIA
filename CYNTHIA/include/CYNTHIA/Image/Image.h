@@ -115,14 +115,21 @@ namespace Cynthia
 
 	};
 	#endif
-	template < typename T >
+	template < typename T = unsigned char>
 	class Image
 	{
 	public:
 
 		Image ( );
 
+		Image (ImageMat<T> image, int width, int height, Channel ch, T* pixels,
+		                   bool texture_loaded, GLuint texture_id, bool is_reset);
+
 		Image ( const std::string & filepath , const Channel & colo_channel = Channel::RGB );
+
+		Image(const Image& image);
+
+		Image(const Image&& image);
 
 		~Image ( );
 
@@ -155,14 +162,37 @@ namespace Cynthia
 		 *
 		 * Increments all pixel values by 1
 		*/
-		[[noreturn]] void operator++ ( int );
+		void operator++ ( int );
 
 		/**
 		 * Pre-decrement operator overload
 		 *
 		 * Decrements all pixel values by 1
 		*/
-		[[noreturn]] void operator-- ( int );
+		void operator-- ( int );
+
+		/**
+		 * computes gradient norm of image relative to color
+		 * brightness
+		 * */
+
+		/**
+		 * Spatially smooths the pixels.
+		 * Uses a recursive filter for this operation.
+		 *
+		 * @param sigma is the standard deviation
+		 * used to make the subsequent calculations of statistical variations
+		 * promotes accuracy
+		 */
+		 void blur(double sigma);
+
+		 /**
+		  * computes image whose pixels are L**2 norms of the colors of the
+		  * instance image
+		  *
+		  * @return as new Image of type float
+		  */
+		 Image<float> getNorm();
 
 		/**
 		 * Loads image from file
@@ -172,34 +202,34 @@ namespace Cynthia
 		static Image< T > loadFromFile ( const std::string & filepath , Channel channel = Channel::RGB );
 
 		/**
-		 * Gets pointer to pixel data
-		 * @return Pointer to pixel data
+		 * Gets const iterator to pixel data
+		 * @return Iterator pointer to pixel data
 		*/
-		std::shared_ptr< T > getPixels ( ) const;
-
+		T* getPixels();
 	private:
 
 		/**
-		 * Loads image texture
-		 */
+		* Loads image texture
+		*/
 		void loadTexture ( );
 
 		/**
-		 * Frees image data
-		 */
+		* Frees image data
+		*/
 		void freeData ( );
 
 		/**
-		 * Resets image data
-		 * essential after freeing image data
-		 */
+		* Resets image data
+		* essential after freeing image data
+		*/
 		void resetData ( );
-
+	private:
 		ImageMat< T >        m_image;
 		std::unique_ptr< T > m_pixels;
 		int                  m_width;
 		int                  m_height;
 		bool                 m_textureLoaded;
+		bool                 m_isReset;
 		GLuint               m_textureId;
 		Channel              m_colorChannel;
 	};
