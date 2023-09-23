@@ -6,21 +6,21 @@
 
 namespace Cynthia
 {
-	template < typename T >
-	Image< T >::Image ( ) : m_width( 0 ) ,
-	                        m_height( 0 ) ,
-	                        m_colorChannel( Channel::NULL_CH ) ,
-	                        m_pixels( nullptr ) ,
-	                        m_textureLoaded( false ) ,
-	                        m_textureId( NULL ) ,
-	                        m_isReset( false )
+	template < typename T , typename DS >
+	Image< T , DS >::Image ( ) : m_width( 0 ) ,
+	                             m_height( 0 ) ,
+	                             m_colorChannel( Channel::NULL_CH ) ,
+	                             m_pixels( nullptr ) ,
+	                             m_textureLoaded( false ) ,
+	                             m_textureId( NULL ) ,
+	                             m_isReset( false )
 	{
 		m_image = NULL;
 	}
 
-	template < typename T >
-	Image< T >::Image ( ImageMat< T > image , int width , int height , Channel ch , T* pixels ,
-	                    bool texture_loaded , GLuint texture_id , bool is_reset )
+	template < typename T , typename DS >
+	Image< T , DS >::Image ( ImageMat< T > image , int width , int height , Channel ch , T* pixels ,
+	                         bool texture_loaded , GLuint texture_id , bool is_reset )
 
 		:                       m_image( image ) ,
 		                        m_width( width ) ,
@@ -33,40 +33,40 @@ namespace Cynthia
 	{
 	}
 
-	template < typename T >
-	Image< T >::Image ( const std::string & filepath , const Channel & color_chanel )
+	template < typename T , typename DS >
+	Image< T , DS >::Image ( const std::string & filepath , const Channel & color_chanel )
 	{
 		*this = loadFromFile( filepath , color_chanel );
 	}
 
-	template < typename T >
-	Image< T >::~Image ( )
+	template < typename T , typename DS >
+	Image< T , DS >::~Image ( )
 	{
 		this->free( );
 		this->reset( );
 	}
 
-	template < typename T >
-	Vector< T > Image< T >::operator[] ( int i )
+	template < typename T , typename DS >
+	Vector< T > Image< T , DS >::operator[] ( int i )
 	{
 		return m_image[ i ];
 	}
 
-	template < typename T >
-	Image< T >::Image ( const Image & image )
+	template < typename T , typename DS >
+	Image< T , DS >::Image ( const Image & image )
 	{
 		return new Image( image.m_image , image.m_width , image.m_height ,
 		                  image.m_colorChannel , image.m_pixels ,
 		                  image.m_textureLoaded , image.m_textureId , image.m_isReset );
 	}
-	template < typename T >
-	Image< T >::Image ( const Image && image )
+	template < typename T , typename DS >
+	Image< T , DS >::Image ( const Image && image )
 	{
 
 	}
 
-	template < typename T >
-	bool Image< T >::operator== ( const Image & img )
+	template < typename T , typename DS >
+	bool Image< T , DS >::operator== ( const Image & img )
 	{
 		if ( img.m_height != this->m_height )
 			return false;
@@ -85,14 +85,14 @@ namespace Cynthia
 		return true;
 	}
 
-	template < typename T >
-	bool Image< T >::operator!= ( const Image & img )
+	template < typename T , typename DS >
+	bool Image< T , DS >::operator!= ( const Image & img )
 	{
 		return !operator==( img );
 	}
 
-	template < typename T >
-	void Image< T >::operator++ ( int )
+	template < typename T , typename DS >
+	void Image< T , DS >::operator++ ( int )
 	{
 		Vector< T > inc( 1 );
 		inc.resize( ( int ) m_colorChannel - 1 );
@@ -105,8 +105,8 @@ namespace Cynthia
 		}
 	}
 
-	template < typename T >
-	void Image< T >::operator-- ( int )
+	template < typename T , typename DS >
+	void Image< T , DS >::operator-- ( int )
 	{
 		Vector< T > inc( -1 );
 		inc.resize( ( int ) m_colorChannel - 1 );
@@ -119,11 +119,11 @@ namespace Cynthia
 		}
 	}
 
-	template < typename T >
-	T* Image< T >::getPixels ( ) { return m_pixels; }
+	template < typename T , typename DS >
+	T* Image< T , DS >::getPixels ( ) { return m_pixels; }
 
-	template < typename T >
-	Image< T > Image< T >::loadFromFile ( const std::string & filepath , Channel _ch )
+	template < typename T , typename DS >
+	Image< T > Image< T , DS >::loadFromFile ( const std::string & filepath , Channel _ch )
 	{
 		if ( !cute::is_file( filepath.c_str( ) ) )
 		{
@@ -153,15 +153,15 @@ namespace Cynthia
 		return temp;
 	}
 
-	template < typename T >
-	void Image< T >::freeData ( )
+	template < typename T , typename DS >
+	void Image< T , DS >::freeData ( )
 	{
 		stbi_image_free( m_pixels );
 		resetData( );
 	}
 
-	template < typename T >
-	void Image< T >::resetData ( )
+	template < typename T , typename DS >
+	void Image< T , DS >::resetData ( )
 	{
 		if ( m_isReset )
 			return;
@@ -173,8 +173,8 @@ namespace Cynthia
 		freeData( );
 	}
 
-	template < typename T >
-	void Image< T >::loadTexture ( )
+	template < typename T , typename DS >
+	void Image< T , DS >::loadTexture ( )
 	{
 		if ( !m_pixels )
 			assert( false && "Image data is NULL" );
@@ -189,21 +189,24 @@ namespace Cynthia
 		m_textureLoaded = true;
 	}
 
-	template < typename T >
-	void Image< T >::blur ( double sigma )
+	template < typename T , typename DS >
+	Image< T , DS > & Image< T , DS >::blur ( double sigma )
 	{
-
+		return *this;
 	}
 
-	template < typename T >
-	Image< float > Image< T >::getNorm ( )
+	template < typename T , typename DS >
+	auto Image< T , DS >::getNorm ( ) -> IsMatrixFloat< DS > // ensuring data structure (DS) is float instead of container
 	{
-		Image< float > gradientNorm;
-		for ( int      i = 0 ; i < this->m_height ; i++ )
+		Image< float , Matrix< float > > gradientNorm;
+		gradientNorm.m_image
+		            .resize( this->m_width , this->m_height );
+		for ( int i = 0 ; i < this->m_height ; i++ )
 		{
 			for ( int j = 0 ; j < this->m_width ; j++ )
 			{
-				m_image[ i ][ j ].norm( );
+				this->m_image( i , j )
+				    .norm( );
 			}
 		}
 		return gradientNorm;

@@ -1,7 +1,7 @@
 //
 // Created by Samer Ali on 9/18/23.
 //
-#include "/Users/samer.ali/CLionProjects/CYNTHIA/CYNTHIA/include/CYNTHIA/Image/load.h"
+#include "../../../../CYNTHIA/include/CYNTHIA/Image/load.h"
 /* stb_image - v2.28 - public domain image loader - http://nothings.org/stb
                                   no warranty implied; use at your own risk
 

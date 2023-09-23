@@ -1,8 +1,17 @@
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 cmake_policy(SET CMP0042 NEW)
 project(CYNTHIA)
+include(CheckCXXCompilerFlag)
+check_cxx_compiler_flag("-std=gnu++2a" CXX_SUPPORTS_CXX2A)
 
+if(NOT CXX_SUPPORTS_CXX2A)
+    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++20 support. Please use a different C++ compiler.")
+else ()
+endif()
+message("compiler found: --------------${CMAKE_CXX_COMPILER}--------------")
 find_package(OpenGL REQUIRED)
 
 include(CheckIncludeFile)

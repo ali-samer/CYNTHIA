@@ -1,4 +1,4 @@
-# Python script to import satellite images
+# Python script to import satellite images for cpp app
 import requests
 from PIL import Image
 from io import BytesIO

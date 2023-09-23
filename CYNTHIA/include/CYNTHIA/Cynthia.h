@@ -16,12 +16,5 @@
 #include "CYNTHIA/GUI/ImGuiLayer.h"
 #include "CYNTHIA/EigenUtils/EigenAliases.h"
 
-//#include "CYNTHIA/Events/ApplicationEvent.h"
-//#include "CYNTHIA/Events/Event.h"
-//#include "CYNTHIA/Events/KeyEvent.h"
-//#include "CYNTHIA/Events/MouseEvent.h"
-//#include "CYNTHIA/Core/EntryPoint.h"
-
-
 
 #endif //CYNTHIA_H

@@ -32,7 +32,14 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 #include <utility>
+#include <type_traits>
+
+
+#define GLAD_GLAPI_EXPORT
+
+
 #include "glad/glad.h"
+
 #include "CYNTHIA/Core/Utility.h"
 #include "../EigenUtils/EigenAliases.h"
 #include "load.h"
@@ -42,94 +49,42 @@ namespace Cynthia
 {
 	enum class Channel : int
 	{
-		RGB       = 3,
-		RGBA      = 4,
-		HSV       = 3,
-		YUV       = 3,
-		CMYK      = 4,
-		LAB       = 3,
-		HSL       = 3,
-		GRAYSCALE = 1,
+		RGB       = 3 ,
+		RGBA      = 4 ,
+		HSV       = 3 ,
+		YUV       = 3 ,
+		CMYK      = 4 ,
+		LAB       = 3 ,
+		HSL       = 3 ,
+		GRAYSCALE = 1 ,
 		NULL_CH   = 0
 	};
 
-	#if 0 // reference this data structure for image data
-	struct ImageData
-	{
-		GLenum texture_internal_fmt;
-		GLenum original_pixel_fmt;
-		GLenum texture_data_t;
-		GLenum original_data_t;
-		GLuint texture;
-		uint8_t* pixels { NULL };
+	template < typename T >
+	using IsMatrixFloat = std::enable_if_t< std::is_same_v< T , Matrix< float>> , bool >;
 
-		int texture_loaded { };
-		int length = width * height * num_color_ch;
-		int width { };
-		int height { };
-		int num_color_ch { };
-		int num_mipmap_lvls { };
+	template < typename T >
+	using IsMatrixInt = std::enable_if_t< std::is_same_v< T , Matrix< int>> , bool >;
 
-		bool flip_vertically;
-		int  error_code { };
-		const char* error_msg;
-
-		void reset ( );
-	};
-	#endif
-	#if 0
-	template < typename T = unsigned char >
-	class Image
-	{
-	public:
-		explicit Image ( const char* filepath , Channel flag = Channel::RGB );
-		Image ( );
-		explicit Image ( const char* filepath , int color_channel = 3 /* RGB */);
-		~Image ( );
-		static Image< T > LoadImg ( std::string filename , Channel color_channel = Channel::RGB );
-
-		Vector< T > operator[] ( int i );
-		bool operator== ( const Image img );
-		bool operator!= ( const Image img );
-		void operator++ ( int );
-		void operator-- ( int );
+	template < typename T >
+	using IsMatrixUChar = std::enable_if_t< std::is_same_v< T , Matrix< unsigned char>> , bool >;
 
 
-		T* dump ( );
-
-	private:
-		void loadData();
-		void free();
-		void reset();
-		void texture();
-	public:
-		ImageData* m_data;
-	private:
-		ImageMat< T >        m_image;
-		std::unique_ptr< T > m_pixels;
-
-		int m_texture_loaded;
-		int m_width;
-		int m_height;
-		int m_color_channel;
-
-	};
-	#endif
-	template < typename T = unsigned char>
+	template < typename T = unsigned char , typename DS = ImageMat< T>>
 	class Image
 	{
 	public:
 
 		Image ( );
 
-		Image (ImageMat<T> image, int width, int height, Channel ch, T* pixels,
-		                   bool texture_loaded, GLuint texture_id, bool is_reset);
+		Image ( ImageMat< T > image , int width , int height , Channel ch , T* pixels ,
+		        bool texture_loaded , GLuint texture_id , bool is_reset );
 
 		Image ( const std::string & filepath , const Channel & colo_channel = Channel::RGB );
 
-		Image(const Image& image);
+		Image ( const Image & image );
 
-		Image(const Image&& image);
+		Image ( const Image && image );
 
 		~Image ( );
 
@@ -184,15 +139,15 @@ namespace Cynthia
 		 * used to make the subsequent calculations of statistical variations
 		 * promotes accuracy
 		 */
-		 void blur(double sigma);
+		Image & blur ( double sigma );
 
-		 /**
-		  * computes image whose pixels are L**2 norms of the colors of the
-		  * instance image
-		  *
-		  * @return as new Image of type float
-		  */
-		 Image<float> getNorm();
+		/**
+		 * computes image whose pixels are L**2 norms of the colors of the
+		 * instance image
+		 *
+		 * @return as new Image of type float
+		 */
+		auto getNorm ( ) -> IsMatrixFloat< DS >;
 
 		/**
 		 * Loads image from file
@@ -205,8 +160,10 @@ namespace Cynthia
 		 * Gets const iterator to pixel data
 		 * @return Iterator pointer to pixel data
 		*/
-		T* getPixels();
+		T* getPixels ( );
 	private:
+
+
 
 		/**
 		* Loads image texture
@@ -224,7 +181,7 @@ namespace Cynthia
 		*/
 		void resetData ( );
 	private:
-		ImageMat< T >        m_image;
+		DS                   m_image;
 		std::unique_ptr< T > m_pixels;
 		int                  m_width;
 		int                  m_height;
