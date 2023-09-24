@@ -30,6 +30,10 @@ if(NOT HAVE_MALLOC_MALLOC_H) # TODO: reference when writing package tests in cma
     endif()
 endif()
 
+configure_file(
+        ${CMAKE_CURRENT_SOURCE_DIR}/glad_config.h.in
+        ${CMAKE_CURRENT_BINARY_DIR}/glad_config.h
+)
 
 add_subdirectory(CYNTHIA/vendor/eigen)
 add_subdirectory(CYNTHIA/vendor/glfw)
@@ -88,3 +92,7 @@ target_link_libraries(CYNTHIA_EXE
         glfw
         stb_image
         )
+
+target_include_directories(CYNTHIA_EXE
+        PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+)

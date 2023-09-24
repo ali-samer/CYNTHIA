@@ -14,6 +14,14 @@ public:
 			CY_INFO("Tab key is pressed");
 	}
 
+	void onImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Hello, World!");
+//		ImGui::ColorEdit4("", new float[4]);
+		ImGui::End();
+	}
+
 	void onEvent(Cynthia::Event& event) override
 	{
 		CY_TRACE("{0}", event);

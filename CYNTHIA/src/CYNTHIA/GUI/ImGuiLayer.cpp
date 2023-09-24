@@ -68,7 +68,6 @@ namespace Cynthia
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 		#endif
 
-		// TODO: set up keymap (keyboard mapping) to allow key events
 
 		// sets up important callbacks
 		// and necessary hooks for use with opengl3

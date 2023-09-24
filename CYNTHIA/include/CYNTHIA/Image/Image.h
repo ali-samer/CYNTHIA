@@ -35,10 +35,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <type_traits>
 
 
-#define GLAD_GLAPI_EXPORT
+#ifndef GLAD_CONFIG_H_INCLUDED
+#define GLAD_CONFIG_H_INCLUDED
 
 
-#include "glad/glad.h"
+#include "glad_config.h"
+
+
+#endif
+
 
 #include "CYNTHIA/Core/Utility.h"
 #include "../EigenUtils/EigenAliases.h"
@@ -69,8 +74,24 @@ namespace Cynthia
 	template < typename T >
 	using IsMatrixUChar = std::enable_if_t< std::is_same_v< T , Matrix< unsigned char>> , bool >;
 
+	template < typename T >
+	using IsIntegral = std::enable_if_t< std::is_same_v< T , int > , bool >;
 
-	template < typename T = unsigned char , typename DS = ImageMat< T>>
+	template < typename T >
+	using IsFloat = std::enable_if_t< std::is_same_v< T , float > , bool >;
+
+	template < typename T >
+	using IsDouble = std::enable_if_t< std::is_same_v< T , double > , bool >;
+
+	template < typename T >
+	using IsUChar = std::enable_if_t< std::is_same_v< T , unsigned char > , bool >;
+
+	template < typename T >
+	using IsChar = std::enable_if_t< std::is_same_v< T , char > , bool >;
+
+
+
+	template < typename T = unsigned char >
 	class Image
 	{
 	public:
@@ -117,14 +138,14 @@ namespace Cynthia
 		 *
 		 * Increments all pixel values by 1
 		*/
-		void operator++ ( int );
+		Image< T > & operator++ ( int );
 
 		/**
 		 * Pre-decrement operator overload
 		 *
 		 * Decrements all pixel values by 1
 		*/
-		void operator-- ( int );
+		Image< T > & operator-- ( int );
 
 		/**
 		 * computes gradient norm of image relative to color
@@ -147,7 +168,7 @@ namespace Cynthia
 		 *
 		 * @return as new Image of type float
 		 */
-		auto getNorm ( ) -> IsMatrixFloat< DS >;
+		Image< T > getNorm ( );
 
 		/**
 		 * Loads image from file
@@ -161,9 +182,19 @@ namespace Cynthia
 		 * @return Iterator pointer to pixel data
 		*/
 		T* getPixels ( );
+
+		/**
+		 * Normalizes pixel range
+		 * @param min and max values inclusive
+		 * @return current image instance
+		 */
+		Image< T > & normalize ( int min , int max );
 	private:
 
-
+		/**
+		 * Updates image texture ID
+		 */
+		void onUpdate ( );
 
 		/**
 		* Loads image texture
@@ -181,7 +212,7 @@ namespace Cynthia
 		*/
 		void resetData ( );
 	private:
-		DS                   m_image;
+		ImageMat< T >        m_image;
 		std::unique_ptr< T > m_pixels;
 		int                  m_width;
 		int                  m_height;
