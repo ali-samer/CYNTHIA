@@ -62,7 +62,8 @@ namespace Cynthia
 		LAB       = 3 ,
 		HSL       = 3 ,
 		GRAYSCALE = 1 ,
-		NULL_CH   = 0
+		NULL_CH   = 0 ,
+		DEFAULT_F   = 1
 	};
 
 	template < typename T >
@@ -106,39 +107,40 @@ namespace Cynthia
 //			m_image = NULL;
 		}
 
-		Image(int width, int height, Channel colorChannel, std::unique_ptr<T> pixels, bool textureLoaded, GLuint textureId, bool isReset)
-			: m_width(width),
-			  m_height(height),
-			  m_colorChannel(colorChannel),
-			  m_pixels(std::move(pixels)),
-			  m_textureLoaded(textureLoaded),
-			  m_textureId(textureId),
-			  m_isReset(isReset)
+		Image ( int width , int height , Channel colorChannel , std::unique_ptr< T > pixels , bool textureLoaded ,
+		        GLuint textureId , bool isReset )
+			: m_width( width ) ,
+			  m_height( height ) ,
+			  m_colorChannel( colorChannel ) ,
+			  m_pixels( std::move( pixels ) ) ,
+			  m_textureLoaded( textureLoaded ) ,
+			  m_textureId( textureId ) ,
+			  m_isReset( isReset )
 		{
 		}
 
-		Image (int width, int height, int channel = 3) : m_width(width),
-														 m_height(height),
-														 m_colorChannel((Channel)channel) ,
-														 m_pixels( nullptr),
-														 m_textureId(NULL),
-														 m_isReset(false),
-														 m_textureLoaded(false)
+		Image ( int width , int height , int channel = 3 ) : m_width( width ) ,
+		                                                     m_height( height ) ,
+		                                                     m_colorChannel( ( Channel ) channel ) ,
+		                                                     m_pixels( nullptr ) ,
+		                                                     m_textureId( NULL ) ,
+		                                                     m_isReset( false ) ,
+		                                                     m_textureLoaded( false )
 		{
-			m_image.resize(width, height);
+			m_image.resize( width , height );
 		}
 
 		Image ( ImageMat< T > image , int width , int height , Channel ch , T* pixels ,
 		        bool texture_loaded , GLuint texture_id , bool is_reset )
 
-			:                       m_image( image ) ,
-			                        m_width( width ) ,
-			                        m_height( height ) ,
-			                        m_colorChannel( ch ) ,
-			                        m_pixels( pixels ) ,
-			                        m_textureLoaded( texture_loaded ) ,
-			                        m_textureId( texture_id ) ,
-			                        m_isReset( is_reset )
+			: m_image( image ) ,
+			  m_width( width ) ,
+			  m_height( height ) ,
+			  m_colorChannel( ch ) ,
+			  m_pixels( pixels ) ,
+			  m_textureLoaded( texture_loaded ) ,
+			  m_textureId( texture_id ) ,
+			  m_isReset( is_reset )
 		{
 		}
 
@@ -154,7 +156,7 @@ namespace Cynthia
 			                  image.m_textureLoaded , image.m_textureId , image.m_isReset );
 		}
 
-		Image ( const Image && image ) : Image(image)
+		Image ( const Image && image ) : Image( image )
 		{
 
 		}
@@ -201,7 +203,8 @@ namespace Cynthia
 			return true;
 		}
 
-		friend std::ostream& operator<<(std::ostream& os, const Image& img) {
+		friend std::ostream & operator<< ( std::ostream & os , const Image & img )
+		{
 			os << "MyClass data: " << img.m_image;
 			return os;
 		}
@@ -243,18 +246,16 @@ namespace Cynthia
 		*/
 		Image< T > & operator-- ( int ) // TODO: fix any possible mistakes
 		{
+			Vector< T > inc( -1 );
+			inc.resize( ( int ) m_colorChannel - 1 );
+			for ( int i = 0 ; i < this->m_height ; i++ )
 			{
-				Vector< T > inc( -1 );
-				inc.resize( ( int ) m_colorChannel - 1 );
-				for ( int i = 0 ; i < this->m_height ; i++ )
+				for ( int j = 0 ; j < this->m_width ; j++ )
 				{
-					for ( int j = 0 ; j < this->m_width ; j++ )
-					{
-						m_image[ i ][ j ] += inc;
-					}
+					m_image[ i ][ j ] += inc;
 				}
-				return *this;
 			}
+			return *this;
 		}
 
 		/**
@@ -264,23 +265,24 @@ namespace Cynthia
 		 *
 		 * @return A new image where pixel values are the sum of the input images' pixels.
 		 */
-		Image< T > & operator+ (const Image img) // TODO: fix any possible mistakes
+		Image< float > & operator+ ( const Image img )
 		{
-			int newWidth = m_width + img.m_width;
-			int newHeight = m_height + img.m_height;
-			Channel newColorChannel = m_colorChannel;
-			bool newTextureLoaded = m_textureLoaded || img.m_textureLoaded;
-			bool newIsReset = m_isReset || img.m_isReset;
-
-			std::unique_ptr<T> newPixels = nullptr;
-			if (newWidth > 0 && newHeight > 0)
+			assert(this->m_colorChannel != img.m_colorChannel && "Unable to add. Different space channels");
+			assert(this->m_image.cols() != img.m_image.cols() && "Unable to add. ");
+			assert(this->m_image.rows() != img.m_image.rows() && "Unable to add. ");
+			ImageMat< float > imgMat(m_width, m_height);
+			for(long i = 0, width_count = 1; i < m_width; i++, width_count++)
 			{
-				newPixels = std::make_unique<T>(newWidth * newHeight);
+				for(long j = 0, height_count = 1; j < m_height; j++, height_count++)
+				{
+					imgMat[i][j] = m_image[i][j].template cast<float>() +
+					                img.m_image[i][j].template cast<float>();
+				}
 			}
+			Image<float>* result = new Image ( imgMat , m_width , m_height , m_colorChannel , m_pixels ,
+												false , NULL , false );
 
-			auto *result = new Image<T>(newWidth, newHeight, newColorChannel, std::move(newPixels), newTextureLoaded, 0, newIsReset);
-
-			return *result;
+				return result->getUpdate();
 		}
 
 		/**
@@ -290,23 +292,24 @@ namespace Cynthia
 		 *
 		 * @return A new image where pixel values are the difference of the input images' pixels.
 		 */
-		Image<T> &operator-(const Image img)
+		Image< T > & operator- ( const Image img )
 		{
-			int newWidth = m_width - img.m_width;
-			int newHeight = m_height - img.m_height;
-			Channel newColorChannel = m_colorChannel;
-			bool newTextureLoaded = m_textureLoaded && !img.m_textureLoaded;
-			bool newIsReset = m_isReset || img.m_isReset;
-
-			std::unique_ptr<T> newPixels = nullptr;
-			if (newWidth > 0 && newHeight > 0)
+			assert(this->m_colorChannel != img.m_colorChannel && "Unable to add. Different space channels");
+			assert(this->m_image.cols() != img.m_image.cols() && "Unable to add. ");
+			assert(this->m_image.rows() != img.m_image.rows() && "Unable to add. ");
+			ImageMat< float > imgMat(m_width, m_height);
+			for(long i = 0, width_count = 1; i < m_width; i++, width_count++)
 			{
-				newPixels = std::make_unique<T[]>(newWidth * newHeight);
+				for(long j = 0, height_count = 1; j < m_height; j++, height_count++)
+				{
+					imgMat[i][j] = m_image[i][j].template cast<float>() +
+					               img.m_image[i][j].template cast<float>();
+				}
 			}
+			Image<float>* result = new Image ( imgMat , m_width , m_height , m_colorChannel , m_pixels ,
+			                                   false , NULL , false );
 
-			auto *result = new Image<T>(newWidth, newHeight, newColorChannel, std::move(newPixels), newTextureLoaded, 0, newIsReset);
-
-			return *result;
+			return result->getUpdate();
 		}
 
 		/**
@@ -338,12 +341,12 @@ namespace Cynthia
 			{
 				for ( int j = 0 ; j < this->m_width ; j++ )
 				{
-					Vector<T> temp = gradientNorm.m_image[ i ][ j ];
-					temp = temp.template cast<float>();
-					auto norm = temp.norm();
-					temp.resize(1);
-					temp[0] = norm;
-					gradientNorm[i][j] = temp;
+					Vector< T > temp = gradientNorm.m_image[ i ][ j ];
+					temp = temp.template cast< float >( );
+					auto norm = temp.norm( );
+					temp.resize( 1 );
+					temp[ 0 ]              = norm;
+					gradientNorm[ i ][ j ] = temp;
 				}
 			}
 			return gradientNorm;
@@ -414,49 +417,58 @@ namespace Cynthia
 			return *this;
 		}
 
-		std::vector<Image> getGradient() {
+		std::vector< Image > getGradient ( )
+		{
 
-			Image gradX(m_width, m_height, 1);
-			Image gradY(m_width, m_height, 1);
+			Image gradX( m_width , m_height , 1 );
+			Image gradY( m_width , m_height , 1 );
 
-			for(int y = 0; y < this->m_height; ++y) {
-				for(int x = 0; x < this->m_width; ++x) {
+			for ( int y = 0 ; y < this->m_height ; ++y )
+			{
+				for ( int x = 0 ; x < this->m_width ; ++x )
+				{
 
-					int x1 = std::max(0, x-1);
-					int y1 = std::max(0, y-1);
-					int x2 = std::min(x+1, m_width-1);
-					int y2 = std::min(y+1, m_height-1);
+					int x1 = std::max( 0 , x - 1 );
+					int y1 = std::max( 0 , y - 1 );
+					int x2 = std::min( x + 1 , m_width - 1 );
+					int y2 = std::min( y + 1 , m_height - 1 );
 
-					auto dx = m_image(y, x2)[0] - m_image(y, x1)[0];
-					auto dy = m_image(y2, x)[1] - m_image(y1, x)[1];
+					auto dx = m_image( y , x2 )[ 0 ] - m_image( y , x1 )[ 0 ];
+					auto dy = m_image( y2 , x )[ 1 ] - m_image( y1 , x )[ 1 ];
 
-					gradX.m_image(y, x)[0] = dx;
-					gradY.m_image(y, x)[0] = dy;
+					gradX.m_image( y , x )[ 0 ] = dx;
+					gradY.m_image( y , x )[ 0 ] = dy;
 				}
 			}
 
-			return {gradX, gradY};
+			return { gradX , gradY };
 		}
+
+		inline int cols() const { return m_image.cols(); }
+		inline int rows() const { return m_image.rows(); }
+
+
 	private:
 
 		/**
 		 * Updates image texture ID
 		 */
-		void onUpdate ( ) // TODO
+		Image< T > & getUpdate ( )
 		{
-			for(int i = 0, i2 = 0; i < m_height; i++)
+			for ( int i = 0 , i2 = 0 ; i < m_height ; i++ )
 			{
-				for(int j = 0; j < m_width; j++)
+				for ( int j = 0 ; j < m_width ; j++ )
 				{
-					for(int k = 0; k < (int)m_colorChannel; k++, i2++)
+					for ( int k = 0 ; k < ( int ) m_colorChannel ; k++ , i2++ )
 					{
-						m_pixels[i2] = m_image[i][j][k];
+						m_pixels[ i2 ] = m_image[ i ][ j ][ k ];
 					}
 					i2++;
 				}
 
 			}
-			this->loadTexture();
+			this->loadTexture( );
+			return *this;
 		}
 
 		/**
