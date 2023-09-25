@@ -106,6 +106,28 @@ namespace Cynthia
 //			m_image = NULL;
 		}
 
+		Image(int width, int height, Channel colorChannel, std::unique_ptr<T> pixels, bool textureLoaded, GLuint textureId, bool isReset)
+			: m_width(width),
+			  m_height(height),
+			  m_colorChannel(colorChannel),
+			  m_pixels(std::move(pixels)),
+			  m_textureLoaded(textureLoaded),
+			  m_textureId(textureId),
+			  m_isReset(isReset)
+		{
+		}
+
+		Image (int width, int height, int channel = 3) : m_width(width),
+														 m_height(height),
+														 m_colorChannel((Channel)channel) ,
+														 m_pixels( nullptr),
+														 m_textureId(NULL),
+														 m_isReset(false),
+														 m_textureLoaded(false)
+		{
+			m_image.resize(width, height);
+		}
+
 		Image ( ImageMat< T > image , int width , int height , Channel ch , T* pixels ,
 		        bool texture_loaded , GLuint texture_id , bool is_reset )
 
@@ -219,7 +241,7 @@ namespace Cynthia
 		 *
 		 * Decrements all pixel values by 1
 		*/
-		Image< T > & operator-- ( int )
+		Image< T > & operator-- ( int ) // TODO: fix any possible mistakes
 		{
 			{
 				Vector< T > inc( -1 );
@@ -236,9 +258,56 @@ namespace Cynthia
 		}
 
 		/**
-		 * computes gradient norm of image relative to color
-		 * brightness
-		 * */
+		 * Adds the pixel values of two images.
+		 * This operator combines two images by element-wise addition,
+		 * resulting in a new image with the sum of corresponding pixel values.
+		 *
+		 * @return A new image where pixel values are the sum of the input images' pixels.
+		 */
+		Image< T > & operator+ (const Image img) // TODO: fix any possible mistakes
+		{
+			int newWidth = m_width + img.m_width;
+			int newHeight = m_height + img.m_height;
+			Channel newColorChannel = m_colorChannel;
+			bool newTextureLoaded = m_textureLoaded || img.m_textureLoaded;
+			bool newIsReset = m_isReset || img.m_isReset;
+
+			std::unique_ptr<T> newPixels = nullptr;
+			if (newWidth > 0 && newHeight > 0)
+			{
+				newPixels = std::make_unique<T>(newWidth * newHeight);
+			}
+
+			auto *result = new Image<T>(newWidth, newHeight, newColorChannel, std::move(newPixels), newTextureLoaded, 0, newIsReset);
+
+			return *result;
+		}
+
+		/**
+		 * Subtracts the pixel values of two images.
+		 * This operator combines two images by element-wise subtraction,
+		 * resulting in a new image with the difference of corresponding pixel values.
+		 *
+		 * @return A new image where pixel values are the difference of the input images' pixels.
+		 */
+		Image<T> &operator-(const Image img)
+		{
+			int newWidth = m_width - img.m_width;
+			int newHeight = m_height - img.m_height;
+			Channel newColorChannel = m_colorChannel;
+			bool newTextureLoaded = m_textureLoaded && !img.m_textureLoaded;
+			bool newIsReset = m_isReset || img.m_isReset;
+
+			std::unique_ptr<T> newPixels = nullptr;
+			if (newWidth > 0 && newHeight > 0)
+			{
+				newPixels = std::make_unique<T[]>(newWidth * newHeight);
+			}
+
+			auto *result = new Image<T>(newWidth, newHeight, newColorChannel, std::move(newPixels), newTextureLoaded, 0, newIsReset);
+
+			return *result;
+		}
 
 		/**
 		 * Spatially smooths the pixels.
@@ -343,6 +412,30 @@ namespace Cynthia
 				}
 			}
 			return *this;
+		}
+
+		std::vector<Image> getGradient() {
+
+			Image gradX(m_width, m_height, 1);
+			Image gradY(m_width, m_height, 1);
+
+			for(int y = 0; y < this->m_height; ++y) {
+				for(int x = 0; x < this->m_width; ++x) {
+
+					int x1 = std::max(0, x-1);
+					int y1 = std::max(0, y-1);
+					int x2 = std::min(x+1, m_width-1);
+					int y2 = std::min(y+1, m_height-1);
+
+					auto dx = m_image(y, x2)[0] - m_image(y, x1)[0];
+					auto dy = m_image(y2, x)[1] - m_image(y1, x)[1];
+
+					gradX.m_image(y, x)[0] = dx;
+					gradY.m_image(y, x)[0] = dy;
+				}
+			}
+
+			return {gradX, gradY};
 		}
 	private:
 
