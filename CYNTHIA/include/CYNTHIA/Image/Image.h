@@ -90,24 +90,58 @@ namespace Cynthia
 	using IsChar = std::enable_if_t< std::is_same_v< T , char > , bool >;
 
 
-
 	template < typename T = unsigned char >
 	class Image
 	{
 	public:
 
-		Image ( );
+		Image ( ) : m_width( 0 ) ,
+		            m_height( 0 ) ,
+		            m_colorChannel( Channel::NULL_CH ) ,
+		            m_pixels( nullptr ) ,
+		            m_textureLoaded( false ) ,
+		            m_textureId( 0 ) ,
+		            m_isReset( false )
+		{
+//			m_image = NULL;
+		}
 
 		Image ( ImageMat< T > image , int width , int height , Channel ch , T* pixels ,
-		        bool texture_loaded , GLuint texture_id , bool is_reset );
+		        bool texture_loaded , GLuint texture_id , bool is_reset )
 
-		Image ( const std::string & filepath , const Channel & colo_channel = Channel::RGB );
+			:                       m_image( image ) ,
+			                        m_width( width ) ,
+			                        m_height( height ) ,
+			                        m_colorChannel( ch ) ,
+			                        m_pixels( pixels ) ,
+			                        m_textureLoaded( texture_loaded ) ,
+			                        m_textureId( texture_id ) ,
+			                        m_isReset( is_reset )
+		{
+		}
 
-		Image ( const Image & image );
+		explicit Image ( const std::string & filepath , const Channel & color_channel = Channel::RGB )
+		{
+			*this = loadFromFile( filepath , color_channel );
+		}
 
-		Image ( const Image && image );
+		Image ( const Image & image )
+		{
+			return new Image( image.m_image , image.m_width , image.m_height ,
+			                  image.m_colorChannel , image.m_pixels ,
+			                  image.m_textureLoaded , image.m_textureId , image.m_isReset );
+		}
 
-		~Image ( );
+		Image ( const Image && image ) : Image(image)
+		{
+
+		}
+
+		~Image ( )
+		{
+			this->free( );
+			this->reset( );
+		}
 
 		/**
 		 * Overloaded [] operator to access image rows
@@ -115,7 +149,10 @@ namespace Cynthia
 		 * @param i Row index
 		 * @return Vector of Vectors containing pixel values for row i
 		*/
-		Vector< T > operator[] ( int i );
+		Vector< T > operator[] ( int i )
+		{
+			return m_image[ i ];
+		}
 
 		/**
 		 * Equality operator overload
@@ -123,7 +160,29 @@ namespace Cynthia
 		 * @param img Image to compare
 		 * @return True if images are equal, false otherwise
 		*/
-		bool operator== ( const Image & img );
+		bool operator== ( const Image & img )
+		{
+			if ( img.m_height != this->m_height )
+				return false;
+			if ( img.m_width != this->m_width )
+				return false;
+			if ( img.m_color_channel != this->m_colorChannel )
+				return false;
+			for ( int i = 0 ; i < this->m_height ; i++ )
+			{
+				for ( int j = 0 ; j < this->m_width ; j++ )
+				{
+					if ( m_image[ i ][ j ] != img[ i ][ j ] )
+						return false;
+				}
+			}
+			return true;
+		}
+
+		friend std::ostream& operator<<(std::ostream& os, const Image& img) {
+			os << "MyClass data: " << img.m_image;
+			return os;
+		}
 
 		/**
 		 * Inequality operator overload
@@ -131,21 +190,50 @@ namespace Cynthia
 		 * @param img Image to compare
 		 * @return True if images are not equal, false otherwise
 		*/
-		bool operator!= ( const Image & img );
+		bool operator!= ( const Image & img )
+		{
+			return !operator==( img );
+		}
 
 		/**
 		 * Pre-increment operator overload
 		 *
 		 * Increments all pixel values by 1
 		*/
-		Image< T > & operator++ ( int );
+		Image< T > & operator++ ( int )
+		{
+			Vector< T > inc( 1 );
+			inc.resize( ( int ) m_colorChannel - 1 );
+			for ( int i = 0 ; i < this->m_height ; i++ )
+			{
+				for ( int j = 0 ; j < this->m_width ; j++ )
+				{
+					m_image[ i ][ j ] += inc;
+				}
+			}
+			return *this;
+		}
 
 		/**
 		 * Pre-decrement operator overload
 		 *
 		 * Decrements all pixel values by 1
 		*/
-		Image< T > & operator-- ( int );
+		Image< T > & operator-- ( int )
+		{
+			{
+				Vector< T > inc( -1 );
+				inc.resize( ( int ) m_colorChannel - 1 );
+				for ( int i = 0 ; i < this->m_height ; i++ )
+				{
+					for ( int j = 0 ; j < this->m_width ; j++ )
+					{
+						m_image[ i ][ j ] += inc;
+					}
+				}
+				return *this;
+			}
+		}
 
 		/**
 		 * computes gradient norm of image relative to color
@@ -160,7 +248,10 @@ namespace Cynthia
 		 * used to make the subsequent calculations of statistical variations
 		 * promotes accuracy
 		 */
-		Image & blur ( double sigma );
+		Image & blur ( double sigma ) // TODO
+		{
+			return *this;
+		}
 
 		/**
 		 * computes image whose pixels are L**2 norms of the colors of the
@@ -168,49 +259,155 @@ namespace Cynthia
 		 *
 		 * @return as new Image of type float
 		 */
-		Image< T > getNorm ( );
+		Image< T > getNorm ( ) // TODO: check if works
+		{
+			Image< float > gradientNorm;
+			gradientNorm.m_image
+			            .resize( this->m_width , this->m_height );
+
+			for ( int i = 0 ; i < this->m_height ; i++ )
+			{
+				for ( int j = 0 ; j < this->m_width ; j++ )
+				{
+					Vector<T> temp = gradientNorm.m_image[ i ][ j ];
+					temp = temp.template cast<float>();
+					auto norm = temp.norm();
+					temp.resize(1);
+					temp[0] = norm;
+					gradientNorm[i][j] = temp;
+				}
+			}
+			return gradientNorm;
+		}
 
 		/**
 		 * Loads image from file
 		 * @param filepath Path to image file, channel flag
 		 * @return True if loaded successfully, false otherwise
 		*/
-		static Image< T > loadFromFile ( const std::string & filepath , Channel channel = Channel::RGB );
+		static Image< T > loadFromFile ( const std::string & filepath , Channel channel = Channel::RGB )
+		{
+			if ( !cute::is_file( filepath.c_str( ) ) )
+			{
+				assert( false && "filepath not recognized" );
+			}
+
+			int   ch = static_cast<int>(channel);
+			Image temp;
+			temp.m_colorChannel = channel;
+			ImageMat< T > image_mat;
+
+			temp.m_pixels = ( std::unique_ptr< T > ) stbi_load( filepath.c_str( ) , &temp.m_width , &temp.m_height ,
+			                                                    &temp.m_color_channel , ch );
+			for ( int i = 0 , step = 0 ; i < temp.m_height ; i++ )
+			{
+				for ( int j = 0 ; j < temp.m_width ; j++ , step += ch )
+				{
+					Vector< T > pixel_to_fill;
+					pixel_to_fill.resize( ch );
+					for ( int k            = 0 ; k < ch ; k++ )
+					{
+						pixel_to_fill[ k ] = temp.m_pixels[ step + k ];
+					}
+					temp.m_image[ i ][ j ] = pixel_to_fill;
+				}
+			}
+			temp.loadTexture( );
+			return temp;
+		}
 
 		/**
 		 * Gets const iterator to pixel data
 		 * @return Iterator pointer to pixel data
 		*/
-		T* getPixels ( );
+		T* getPixels ( ) { return m_pixels; }
 
 		/**
 		 * Normalizes pixel range
 		 * @param min and max values inclusive
 		 * @return current image instance
 		 */
-		Image< T > & normalize ( int min , int max );
+		Image< T > & normalize ( int min , int max )
+		{
+			for ( int i = 0 ; i < this->m_height ; i++ )
+			{
+				for ( int j = 0 ; j < this->m_width ; j++ )
+				{
+					for ( int k = 0 ; k < ( int ) this->m_colorChannel ; k++ )
+					{
+						if ( m_image[ i ][ j ][ k ] < min )
+							m_image[ i ][ j ][ k ] = min;
+						else if ( m_image[ i ][ j ][ k ] > max )
+							m_image[ i ][ j ][ k ] = max;
+					}
+				}
+			}
+			return *this;
+		}
 	private:
 
 		/**
 		 * Updates image texture ID
 		 */
-		void onUpdate ( );
+		void onUpdate ( ) // TODO
+		{
+			for(int i = 0, i2 = 0; i < m_height; i++)
+			{
+				for(int j = 0; j < m_width; j++)
+				{
+					for(int k = 0; k < (int)m_colorChannel; k++, i2++)
+					{
+						m_pixels[i2] = m_image[i][j][k];
+					}
+					i2++;
+				}
+
+			}
+			this->loadTexture();
+		}
 
 		/**
 		* Loads image texture
 		*/
-		void loadTexture ( );
+		void loadTexture ( )
+		{
+			if ( !m_pixels )
+				assert( false && "Image data is NULL" );
+			glGenTextures( 1 , &m_textureId );
+			glBindTexture( GL_TEXTURE_2D , m_textureId );
+			glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR );
+			glTexImage2D( GL_TEXTURE_2D , 0 , GL_RGBA , &m_width , &m_height , 0 , GL_RGBA , GL_UNSIGNED_BYTE ,
+			              m_pixels );
+
+			glGenerateMipmap( GL_TEXTURE_2D );
+			m_textureLoaded = true;
+		}
 
 		/**
 		* Frees image data
 		*/
-		void freeData ( );
+		void freeData ( )
+		{
+			stbi_image_free( m_pixels );
+			resetData( );
+		}
 
 		/**
 		* Resets image data
 		* essential after freeing image data
 		*/
-		void resetData ( );
+		void resetData ( )
+		{
+			if ( m_isReset )
+				return;
+			m_width         = 0;
+			m_height        = 0;
+			m_textureLoaded = false;
+			m_textureId     = NULL;
+			m_isReset       = true;
+			freeData( );
+		}
 	private:
 		ImageMat< T >        m_image;
 		std::unique_ptr< T > m_pixels;

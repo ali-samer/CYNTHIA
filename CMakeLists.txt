@@ -83,6 +83,7 @@ add_executable(CYNTHIA_EXE
         CYNTHIA/src/CYNTHIA/EigenUtils/EigenUtilities.cpp
         CYNTHIA/src/Platform/Windows/WindowsInput.cpp
         CYNTHIA/src/CYNTHIA/GUI/ImGUIBuild.cpp
+        CYNTHIA/src/CYNTHIA/Image/ImageLayer.cpp
 )
 
 
@@ -95,4 +96,9 @@ target_link_libraries(CYNTHIA_EXE
 
 target_include_directories(CYNTHIA_EXE
         PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+target_sources(CYNTHIA_EXE
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/CYNTHIA/src/CYNTHIA/Image/Image.cpp
 )

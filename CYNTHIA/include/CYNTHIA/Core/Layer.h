@@ -22,7 +22,8 @@ namespace Cynthia
 		virtual void onDetach ( ) { }
 		virtual void onUpdate ( ) { }
 		virtual void onEvent ( Event & event ) { }
-		virtual void onImGuiRender() { };
+		virtual void onImageRender ( ) { }
+		virtual void onImGuiRender ( ) { }
 		inline const std::string & getName ( ) const { return m_debugName; }
 	protected:
 		std::string m_debugName;

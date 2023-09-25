@@ -10,6 +10,7 @@
 #include "LayerStack.h"
 #include "CYNTHIA/Core/Window.h"
 #include "CYNTHIA/GUI/ImGuiLayer.h"
+#include "CYNTHIA/Image/ImageLayer.h"
 
 
 namespace Cynthia
@@ -34,6 +35,7 @@ namespace Cynthia
 		bool onWindowClose(WindowCloseEvent& event);
 		std::unique_ptr<Window> m_window;
 		ImGuiLayer* m_imGuiLayer;
+		ImageLayer* m_imageLayer;
 		bool  m_running = true;
 		LayerStack m_layerStack;
 

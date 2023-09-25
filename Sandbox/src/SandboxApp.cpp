@@ -1,5 +1,8 @@
 #include "CYNTHIA/Core/EntryPoint.h"
 #include "CYNTHIA/Cynthia.h"
+#include "CYNTHIA/Image/Image.h"
+
+
 class ExampleLayer : public Cynthia::Layer
 {
 public:
@@ -39,7 +42,6 @@ public:
   {
 
   }
-
 };
 
 Sandbox::Application* Cynthia::CreateApplication ( )

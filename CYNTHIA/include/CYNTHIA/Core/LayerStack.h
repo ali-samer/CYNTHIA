@@ -5,8 +5,10 @@
 #ifndef CYNTHIA_CORE_LAYERSTACK_H
 #define CYNTHIA_CORE_LAYERSTACK_H
 
+
 #include "Layer.h"
 #include "Includes.h"
+
 
 namespace Cynthia
 {
@@ -14,19 +16,19 @@ namespace Cynthia
 	class LayerStack
 	{
 	public:
-		LayerStack();
-		~LayerStack();
+		LayerStack ( );
+		~LayerStack ( );
 
-		void pushLayer(Layer* layer);
-		void pushOverlay(Layer* overlay);
-		void popLayer(Layer* layer);
-		void popOverlay(Layer* overlay);
+		void pushLayer ( Layer* layer );
+		void pushOverlay ( Layer* overlay );
+		void popLayer ( Layer* layer );
+		void popOverlay ( Layer* overlay );
 
-		std::vector<Layer*>::iterator begin() { return m_layer.begin(); }
-		std::vector<Layer*>::iterator end() { return m_layer.end(); }
+		std::vector< Layer* >::iterator begin ( ) { return m_layer.begin( ); }
+		std::vector< Layer* >::iterator end ( ) { return m_layer.end( ); }
 	private:
-		std::vector<Layer*> m_layer;
-		unsigned int        m_layerInsertIndex;
+		std::vector< Layer* > m_layer;
+		unsigned int          m_layerInsertIndex;
 	};
 
 }

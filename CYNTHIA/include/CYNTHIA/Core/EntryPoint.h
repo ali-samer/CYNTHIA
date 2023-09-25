@@ -5,9 +5,7 @@
 #ifndef CYNTHIA_CORE_ENTRYPOINT_H
 #define CYNTHIA_CORE_ENTRYPOINT_H
 
-
 #include "CYNTHIA/Cynthia.h"
-
 
 int main(int argc, char** argv)
 {
