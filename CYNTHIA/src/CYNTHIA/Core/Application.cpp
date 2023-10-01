@@ -17,7 +17,10 @@
 
 namespace Cynthia
 {
+// Application.cpp
+	Cynthia::LayerStack Cynthia::Application::m_layerStack; //important to prevent segmentation fault
 
+// Rest of Application.cpp code
 	#define BIND_EVENT_FN( X ) std::bind(&Application::X, this, std::placeholders::_1)
 	class Application* Application::s_instance = nullptr; // singleton design pattern to allow only one
 	// instance of the class to exist

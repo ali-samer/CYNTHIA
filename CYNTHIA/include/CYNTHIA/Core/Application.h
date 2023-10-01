@@ -37,7 +37,7 @@ namespace Cynthia
 		ImGuiLayer* m_imGuiLayer;
 		ImageLayer* m_imageLayer;
 		bool  m_running = true;
-		LayerStack m_layerStack;
+		static LayerStack m_layerStack;
 
 	};
 

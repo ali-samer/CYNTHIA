@@ -35,6 +35,33 @@ configure_file(
         ${CMAKE_CURRENT_BINARY_DIR}/glad_config.h
 )
 
+set(SRC_FILES "")
+set(SOURCE_DIRS
+        "${CMAKE_SOURCE_DIR}/Sandbox/src"
+        "${CMAKE_SOURCE_DIR}/CYNTHIA/src/CYNTHIA/Core"
+        "${CMAKE_SOURCE_DIR}/CYNTHIA/src/CYNTHIA/GUI"
+        "${CMAKE_SOURCE_DIR}/CYNTHIA/src/CYNTHIA/Image"
+        "${CMAKE_SOURCE_DIR}/CYNTHIA/src/Platform/Mac"
+        "${CMAKE_SOURCE_DIR}/CYNTHIA/src/Platform/Windows"
+        "${CMAKE_SOURCE_DIR}/CYNTHIA/vendor/imgui"
+        "${CMAKE_SOURCE_DIR}/CYNTHIA/vendor/glad/src"
+)
+
+foreach(SOURCE_DIR ${SOURCE_DIRS})
+    file(GLOB SOURCE_FILES_IN_DIR
+            "${SOURCE_DIR}/*.cpp"
+            "${SOURCE_DIR}/*.c"
+    )
+    list(APPEND SRC_FILES ${SOURCE_FILES_IN_DIR})
+endforeach()
+
+list(APPEND SRC_FILES
+        CYNTHIA/vendor/imgui/backends/imgui_impl_opengl3.cpp
+        CYNTHIA/vendor/imgui/backends/imgui_impl_glfw.cpp)
+
+
+
+
 add_subdirectory(CYNTHIA/vendor/eigen)
 add_subdirectory(CYNTHIA/vendor/glfw)
 add_subdirectory(CYNTHIA/src/CYNTHIA/Image)
@@ -60,31 +87,7 @@ endif ()
 add_compile_definitions(GL_SILENCE_DEPRECATION) #silence annoying gl deprecation warnings
 add_compile_definitions(GLFW_INCLUDE_NONE) #GLAD will complain if GLFW include is enabled
 
-add_executable(CYNTHIA_EXE
-        Sandbox/src/SandboxApp.cpp
-        CYNTHIA/src/CYNTHIA/Core/Application.cpp
-        CYNTHIA/src/CYNTHIA/Core/Log.cpp
-        CYNTHIA/src/CYNTHIA/Core/Window.cpp
-        CYNTHIA/src/Platform/Mac/MacWindow.cpp
-        CYNTHIA/src/Platform/Windows/Win32Window.cpp
-        CYNTHIA/src/CYNTHIA/Core/LayerStack.cpp
-        CYNTHIA/src/CYNTHIA/Core/Layer.cpp
-        CYNTHIA/vendor/glad/src/glad.c
-        CYNTHIA/src/CYNTHIA/GUI/ImGuiLayer.cpp
-        CYNTHIA/vendor/imgui/imgui.cpp
-        CYNTHIA/vendor/imgui/imgui_demo.cpp
-        CYNTHIA/vendor/imgui/imgui_draw.cpp
-        CYNTHIA/vendor/imgui/imgui_tables.cpp
-        CYNTHIA/vendor/imgui/imgui_widgets.cpp
-        CYNTHIA/vendor/imgui/backends/imgui_impl_opengl3.cpp
-        CYNTHIA/vendor/imgui/backends/imgui_impl_glfw.cpp
-        CYNTHIA/src/CYNTHIA/Image/Image.cpp
-        CYNTHIA/src/CYNTHIA/EigenUtils/EigenAliases.cpp
-        CYNTHIA/src/CYNTHIA/EigenUtils/EigenUtilities.cpp
-        CYNTHIA/src/Platform/Windows/WindowsInput.cpp
-        CYNTHIA/src/CYNTHIA/GUI/ImGUIBuild.cpp
-        CYNTHIA/src/CYNTHIA/Image/ImageLayer.cpp
-)
+add_executable(CYNTHIA_EXE ${SRC_FILES})
 
 
 target_link_libraries(CYNTHIA_EXE
@@ -92,13 +95,9 @@ target_link_libraries(CYNTHIA_EXE
         OpenGL::GL
         glfw
         stb_image
-        )
+)
 
 target_include_directories(CYNTHIA_EXE
         PRIVATE ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_sources(CYNTHIA_EXE
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/CYNTHIA/src/CYNTHIA/Image/Image.cpp
-)

@@ -13,7 +13,7 @@ namespace Cynthia
 {
 
 	ImGuiLayer::ImGuiLayer ( )
-		: Layer("ImGuiLayer")
+		: Layer( "ImGuiLayer" )
 	{
 
 	}
@@ -22,7 +22,7 @@ namespace Cynthia
 	{
 
 	}
-#if 0
+#if 0 // TODO: remove when sure function is not needed
 	void ImGuiLayer::onUpdate ( )
 	{
 
@@ -53,13 +53,13 @@ namespace Cynthia
 #endif
 	void ImGuiLayer::onAttach ( )
 	{
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext(); // creating "imgui" context data structure to store current state of user interface
-		ImGui::StyleColorsDark(); // setting default dark color scheme for imgui
+		IMGUI_CHECKVERSION( );
+		ImGui::CreateContext( ); // creating "imgui" context data structure to store current state of user interface
+		ImGui::StyleColorsDark( ); // setting default dark color scheme for imgui
 //		ImGui::StyleColorsClassic();
-		ImGuiIO& io = ImGui::GetIO(); // important to access user events customize imgui behavior
+		ImGuiIO & io = ImGui::GetIO( ); // important to access user events customize imgui behavior
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors; // allows imgui to change the mouse cursor shape based on the current
-															  // widget or interaction
+		// widget or interaction
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos; // allows imgui to manipulate mouse pos. important for drag and drop
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
@@ -71,42 +71,45 @@ namespace Cynthia
 
 		// sets up important callbacks
 		// and necessary hooks for use with opengl3
-		ImGui_ImplGlfw_InitForOpenGL( Application::Get( ).getWindowObj( ).getWindow() , true);
-		ImGui_ImplOpenGL3_Init("#version 410"); // initialize imgui with opengl 3 renderer -v 4.1
+		ImGui_ImplGlfw_InitForOpenGL( Application::Get( ).getWindowObj( )
+		                                                 .getWindow( ) , true );
+		ImGui_ImplOpenGL3_Init( "#version 410" ); // initialize imgui with opengl 3 renderer -v 4.1
 
 
 	}
 	void ImGuiLayer::onDetach ( )
 	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		ImGui_ImplOpenGL3_Shutdown( );
+		ImGui_ImplGlfw_Shutdown( );
+		ImGui::DestroyContext( );
 	}
 	void ImGuiLayer::begin ( )
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+		ImGui_ImplOpenGL3_NewFrame( );
+		ImGui_ImplGlfw_NewFrame( );
+		ImGui::NewFrame( );
 	}
 	void ImGuiLayer::end ( )
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2(Application::Get().getWindowObj().getWidth(), Application::Get().getWindowObj().getHeight());
+		ImGuiIO & io = ImGui::GetIO( );
+		io.DisplaySize = ImVec2( Application::Get( ).getWindowObj( )
+		                                            .getWidth( ) , Application::Get( ).getWindowObj( )
+		                                                                              .getHeight( ) );
 
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		if(io.ConfigFlags  & ImGuiConfigFlags_ViewportsEnable)
+		ImGui::Render( );
+		ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData( ) );
+		if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
 		{
-			GLFWwindow* current_context = glfwGetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(current_context);
+			GLFWwindow* current_context = glfwGetCurrentContext( );
+			ImGui::UpdatePlatformWindows( );
+			ImGui::RenderPlatformWindowsDefault( );
+			glfwMakeContextCurrent( current_context );
 		}
 	}
 	void ImGuiLayer::onImGuiRender ( )
 	{
 		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+		ImGui::ShowDemoWindow( &show );
 	}
 
 
