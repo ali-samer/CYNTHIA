@@ -60,13 +60,15 @@ list(APPEND SRC_FILES
         CYNTHIA/vendor/imgui/backends/imgui_impl_glfw.cpp)
 
 
-
+add_compile_definitions(-DCY_WORKSPACE_DIR_PATH="${CMAKE_SOURCE_DIR}/")
 
 add_subdirectory(CYNTHIA/vendor/eigen)
 add_subdirectory(CYNTHIA/vendor/glfw)
 add_subdirectory(CYNTHIA/src/CYNTHIA/Image)
 add_subdirectory(CYNTHIA/vendor/pybind11)
 
+
+include_directories(${CMAKE_SOURCE_DIR})
 include_directories(CYNTHIA/include)
 include_directories(CYNTHIA/vendor)
 include_directories(CYNTHIA/vendor/glfw/include)

@@ -21,7 +21,8 @@ namespace Cynthia
 		virtual void onDetach() override;
 //		virtual void onUpdate() override;
 		virtual void onImGuiRender() override;
-
+		void setDarkThemeColors();
+		uint32_t GetActiveWidgetID() const;
 		void begin();
 		void end();
 	private:

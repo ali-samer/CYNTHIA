@@ -7,6 +7,7 @@
 #include "backends/imgui_impl_opengl3.h"
 #include "CYNTHIA/Core/Log.h"
 #include "backends/imgui_impl_opengl3_loader.h"
+#include "imgui_internal.h"
 
 
 namespace Cynthia
@@ -55,7 +56,6 @@ namespace Cynthia
 	{
 		IMGUI_CHECKVERSION( );
 		ImGui::CreateContext( ); // creating "imgui" context data structure to store current state of user interface
-		ImGui::StyleColorsDark( ); // setting default dark color scheme for imgui
 //		ImGui::StyleColorsClassic();
 		ImGuiIO & io = ImGui::GetIO( ); // important to access user events customize imgui behavior
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors; // allows imgui to change the mouse cursor shape based on the current
@@ -68,6 +68,27 @@ namespace Cynthia
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
 		#endif
 
+		float fontSize = 18.0f;// *2.0f;
+
+		std::string current_path = CY_WORKSPACE_DIR_PATH "assets/fonts/Open_Sans,Raleway/Open_Sans/static/";
+		std::cout <<  current_path << std::endl;
+		io.Fonts->AddFontFromFileTTF( (current_path + "OpenSans-Bold.ttf").c_str(), fontSize);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF((current_path + "OpenSans-Regular.ttf").c_str(), fontSize);
+
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsClassic();
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		setDarkThemeColors();
 
 		// sets up important callbacks
 		// and necessary hooks for use with opengl3
@@ -105,6 +126,43 @@ namespace Cynthia
 			ImGui::RenderPlatformWindowsDefault( );
 			glfwMakeContextCurrent( current_context );
 		}
+	}
+	void ImGuiLayer::setDarkThemeColors()
+	{
+		auto& colors = ImGui::GetStyle().Colors;
+		colors[ImGuiCol_WindowBg] = ImVec4{ 0.1f, 0.105f, 0.11f, 1.0f };
+
+		// Headers
+		colors[ImGuiCol_Header] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_HeaderHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_HeaderActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Buttons
+		colors[ImGuiCol_Button] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_ButtonHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_ButtonActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Frame BG
+		colors[ImGuiCol_FrameBg] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+		colors[ImGuiCol_FrameBgHovered] = ImVec4{ 0.3f, 0.305f, 0.31f, 1.0f };
+		colors[ImGuiCol_FrameBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+
+		// Tabs
+		colors[ImGuiCol_Tab] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TabHovered] = ImVec4{ 0.38f, 0.3805f, 0.381f, 1.0f };
+		colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
+		colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+
+		// Title
+		colors[ImGuiCol_TitleBg] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TitleBgActive] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
+	}
+
+	uint32_t ImGuiLayer::GetActiveWidgetID() const
+	{
+		return GImGui->ActiveId;
 	}
 	void ImGuiLayer::onImGuiRender ( )
 	{
