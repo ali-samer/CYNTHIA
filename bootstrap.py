@@ -17,6 +17,9 @@ def runPythonScript(Script, Params):
         print( "Unable to run " + Script )
         exit(255)
 
+def clear_terminal():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 if executeCommandSilent(Python + " --version") != 0:
     print( "Make sure Python can be started from the command line (add path to `python.exe` to PATH on Windows)" )
     exit(255)
@@ -34,8 +37,19 @@ if executeCommandSilent("hg --version") != 0:
     exit(255)
 
 # run Tools/Bootstrap
-
-runPythonScript( os.path.join("deps", "bootstrap.py"), "-b deps" )
-
+clear_terminal()
+runPythonScript( os.path.join("vendor", "bootstrap.py"), "-b vendor" )
 print( "" )
 print( "Bootstrapping done." )
+
+__cwd = os.getcwd()
+print("Build and install indirect dependencies?(Y/n):", end=" ")
+build_and_install_deps = str(input())
+print("")
+if build_and_install_deps.lower() == "y":
+    clear_terminal()
+    build_script_path = os.path.join(__cwd, "build_and_install.py")
+    project_dir = os.path.join(__cwd, "vendor", "src", "xtl")
+    subprocess.run([Python, build_script_path, project_dir], check=True)
+else:
+    print("Script finished!")

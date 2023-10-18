@@ -33,6 +33,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <utility>
 #include <type_traits>
+#include <iostream>
 
 
 #ifndef GLAD_CONFIG_H_INCLUDED
@@ -48,6 +49,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "CYNTHIA/Core/Utility.h"
 #include "../EigenUtils/EigenAliases.h"
 #include "load.h"
+#include "Stack.h"
 //#include <pybind11/pybind11.h>
 
 namespace Cynthia
@@ -63,7 +65,7 @@ namespace Cynthia
 		HSL       = 3 ,
 		GRAYSCALE = 1 ,
 		NULL_CH   = 0 ,
-		DEFAULT_F   = 1
+		DEFAULT_F = 1
 	};
 
 	template < typename T >
@@ -95,13 +97,14 @@ namespace Cynthia
 	class Image
 	{
 	public:
+		#if 1
 
 		Image ( ) : m_width( 0 ) ,
 		            m_height( 0 ) ,
 		            m_colorChannel( Channel::NULL_CH ) ,
 		            m_pixels( nullptr ) ,
 		            m_textureLoaded( false ) ,
-		            m_textureId( 0 ) ,
+		            m_textureID( 0 ) ,
 		            m_isReset( false )
 		{
 //			m_image = NULL;
@@ -114,7 +117,7 @@ namespace Cynthia
 			  m_colorChannel( colorChannel ) ,
 			  m_pixels( std::move( pixels ) ) ,
 			  m_textureLoaded( textureLoaded ) ,
-			  m_textureId( textureId ) ,
+			  m_textureID( textureId ) ,
 			  m_isReset( isReset )
 		{
 		}
@@ -123,7 +126,7 @@ namespace Cynthia
 		                                                     m_height( height ) ,
 		                                                     m_colorChannel( ( Channel ) channel ) ,
 		                                                     m_pixels( nullptr ) ,
-		                                                     m_textureId( NULL ) ,
+		                                                     m_textureID( NULL ) ,
 		                                                     m_isReset( false ) ,
 		                                                     m_textureLoaded( false )
 		{
@@ -139,27 +142,23 @@ namespace Cynthia
 			  m_colorChannel( ch ) ,
 			  m_pixels( pixels ) ,
 			  m_textureLoaded( texture_loaded ) ,
-			  m_textureId( texture_id ) ,
+			  m_textureID( texture_id ) ,
 			  m_isReset( is_reset )
 		{
 		}
 
-		explicit Image ( const std::string & filepath , const Channel & color_channel = Channel::RGB )
+		Image ( const std::string & filepath , const Channel & color_channel = Channel::RGB )
 		{
-			*this = loadFromFile( filepath , color_channel );
+			this->loadFromFile( filepath , ( int ) color_channel );
 		}
 
 		Image ( const Image & image )
 		{
 			return new Image( image.m_image , image.m_width , image.m_height ,
 			                  image.m_colorChannel , image.m_pixels ,
-			                  image.m_textureLoaded , image.m_textureId , image.m_isReset );
+			                  image.m_textureLoaded , image.m_textureID , image.m_isReset );
 		}
 
-		Image ( const Image && image ) : Image( image )
-		{
-
-		}
 
 		~Image ( )
 		{
@@ -267,22 +266,26 @@ namespace Cynthia
 		 */
 		Image< float > & operator+ ( const Image img )
 		{
-			assert(this->m_colorChannel != img.m_colorChannel && "Unable to add. Different space channels");
-			assert(this->m_image.cols() != img.m_image.cols() && "Unable to add. ");
-			assert(this->m_image.rows() != img.m_image.rows() && "Unable to add. ");
-			ImageMat< float > imgMat(m_width, m_height);
-			for(long i = 0, width_count = 1; i < m_width; i++, width_count++)
+			assert( this->m_colorChannel != img.m_colorChannel && "Unable to add. Different space channels" );
+			assert( this->m_image
+			            .cols( ) != img.m_image
+			                           .cols( ) && "Unable to add. " );
+			assert( this->m_image
+			            .rows( ) != img.m_image
+			                           .rows( ) && "Unable to add. " );
+			ImageMat< float > imgMat( m_width , m_height );
+			for ( long        i = 0 , width_count = 1 ; i < m_width ; i++ , width_count++ )
 			{
-				for(long j = 0, height_count = 1; j < m_height; j++, height_count++)
+				for ( long j = 0 , height_count = 1 ; j < m_height ; j++ , height_count++ )
 				{
-					imgMat[i][j] = m_image[i][j].template cast<float>() +
-					                img.m_image[i][j].template cast<float>();
+					imgMat[ i ][ j ] = m_image[ i ][ j ].template cast< float >( ) +
+					                   img.m_image[ i ][ j ].template cast< float >( );
 				}
 			}
-			Image<float>* result = new Image ( imgMat , m_width , m_height , m_colorChannel , m_pixels ,
-												false , NULL , false );
+			Image< float >* result = new Image( imgMat , m_width , m_height , m_colorChannel , m_pixels ,
+			                                    false , NULL , false );
 
-				return result->getUpdate();
+			return result->getUpdate( );
 		}
 
 		/**
@@ -294,22 +297,26 @@ namespace Cynthia
 		 */
 		Image< T > & operator- ( const Image img )
 		{
-			assert(this->m_colorChannel != img.m_colorChannel && "Unable to add. Different space channels");
-			assert(this->m_image.cols() != img.m_image.cols() && "Unable to add. ");
-			assert(this->m_image.rows() != img.m_image.rows() && "Unable to add. ");
-			ImageMat< float > imgMat(m_width, m_height);
-			for(long i = 0, width_count = 1; i < m_width; i++, width_count++)
+			assert( this->m_colorChannel != img.m_colorChannel && "Unable to add. Different space channels" );
+			assert( this->m_image
+			            .cols( ) != img.m_image
+			                           .cols( ) && "Unable to add. " );
+			assert( this->m_image
+			            .rows( ) != img.m_image
+			                           .rows( ) && "Unable to add. " );
+			ImageMat< float > imgMat( m_width , m_height );
+			for ( long        i = 0 , width_count = 1 ; i < m_width ; i++ , width_count++ )
 			{
-				for(long j = 0, height_count = 1; j < m_height; j++, height_count++)
+				for ( long j = 0 , height_count = 1 ; j < m_height ; j++ , height_count++ )
 				{
-					imgMat[i][j] = m_image[i][j].template cast<float>() +
-					               img.m_image[i][j].template cast<float>();
+					imgMat[ i ][ j ] = m_image[ i ][ j ].template cast< float >( ) +
+					                   img.m_image[ i ][ j ].template cast< float >( );
 				}
 			}
-			Image<float>* result = new Image ( imgMat , m_width , m_height , m_colorChannel , m_pixels ,
-			                                   false , NULL , false );
+			Image< float >* result = new Image( imgMat , m_width , m_height , m_colorChannel , m_pixels ,
+			                                    false , NULL , false );
 
-			return result->getUpdate();
+			return result->getUpdate( );
 		}
 
 		/**
@@ -364,13 +371,14 @@ namespace Cynthia
 				assert( false && "filepath not recognized" );
 			}
 
-			int   ch = static_cast<int>(channel);
 			Image temp;
-			temp.m_colorChannel = channel;
+			temp.m_colorChannel   = channel;
+			temp.m_colorChannelID = static_cast<int>(channel);
 			ImageMat< T > image_mat;
-
-			temp.m_pixels = ( std::unique_ptr< T > ) stbi_load( filepath.c_str( ) , &temp.m_width , &temp.m_height ,
-			                                                    &temp.m_color_channel , ch );
+			int           ch = temp.m_colorChannelID;
+			temp.m_pixels = std::move(
+				( std::unique_ptr< T > ) stbi_load( filepath.c_str( ) , &temp.m_width , &temp.m_height ,
+				                                    &temp.m_colorChannel , ch ) );
 			for ( int i = 0 , step = 0 ; i < temp.m_height ; i++ )
 			{
 				for ( int j = 0 ; j < temp.m_width ; j++ , step += ch )
@@ -393,6 +401,11 @@ namespace Cynthia
 		 * @return Iterator pointer to pixel data
 		*/
 		T* getPixels ( ) { return m_pixels; }
+
+		GLuint getTextureID ( ) { return m_textureID; }
+
+		int & getWidth ( ) { return m_width; } // TODO: change func signature to return copy value of width and height
+		int & getHeight ( ) { return m_height; }
 
 		/**
 		 * Normalizes pixel range
@@ -444,8 +457,47 @@ namespace Cynthia
 			return { gradX , gradY };
 		}
 
-		inline int cols() const { return m_image.cols(); }
-		inline int rows() const { return m_image.rows(); }
+		inline int cols ( ) const { return m_image.cols( ); }
+		inline int rows ( ) const { return m_image.rows( ); }
+
+		void loadFromFile ( const std::string & filepath , int channel )
+		{
+			std::cout << "image file path: " << filepath << std::endl;
+			assert( !filepath.empty( ) && "File path is empty" );
+			m_pixels    = ( T* ) stbi_load( filepath.c_str( ) , &m_width , &m_height , &m_colorChannelID ,
+			                                channel );
+			for ( int i = 0 , step = 0 ; i < m_height ; i++ )
+			{
+				for ( int j = 0 ; j < m_width ; j++ )
+				{
+					Vector< T > pixel( channel );
+					for ( int   k     = 0 ; k < channel ; k++ )
+					{
+						pixel[ k ] = *( m_pixels + step + k );
+					}
+					m_image[ i ][ j ] = pixel;
+					step += channel;
+				}
+			}
+			loadTexture( );
+		}
+
+		void free ( )
+		{
+			std::free( m_pixels );
+		}
+
+
+
+		void reset ( )
+		{
+
+		}
+
+		inline size_t size ( bool with_channel_ID = false )
+		{
+			return with_channel_ID ? m_colorChannelID * cols( ) * rows( ) : cols( ) * rows( );
+		}
 
 
 	private:
@@ -476,13 +528,30 @@ namespace Cynthia
 		*/
 		void loadTexture ( )
 		{
-			if ( !m_pixels )
-				assert( false && "Image data is NULL" );
-			glGenTextures( 1 , &m_textureId );
-			glBindTexture( GL_TEXTURE_2D , m_textureId );
-			glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR );
+			assert( m_pixels != nullptr && "Image data is NULL" );
+			glGenTextures( 1 , &m_textureID );
+			glBindTexture( GL_TEXTURE_2D , m_textureID );
 			glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR );
-			glTexImage2D( GL_TEXTURE_2D , 0 , GL_RGBA , &m_width , &m_height , 0 , GL_RGBA , GL_UNSIGNED_BYTE ,
+			glTexImage2D( GL_TEXTURE_2D , 0 , GL_RGB , m_width , m_height , 0 , GL_RGB , GL_UNSIGNED_BYTE ,
+			              m_pixels );
+
+			glGenerateMipmap( GL_TEXTURE_2D );
+			m_textureLoaded = true;
+
+		}
+
+		void loadTexture ( GLenum minFilter , GLenum magFilter , GLenum internalFormat )
+		{
+			assert( m_pixels != nullptr && "Image data is NULL" );
+			glGenTextures( 1 , &m_textureID );
+			glBindTexture( GL_TEXTURE_2D , m_textureID );
+
+			glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , minFilter ); // Set minification filter
+			glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , magFilter ); // Set magnification filter
+
+			// You can add more options here, such as wrapping modes, etc.
+
+			glTexImage2D( GL_TEXTURE_2D , 0 , internalFormat , m_width , m_height , 0 , GL_RGB , GL_UNSIGNED_BYTE ,
 			              m_pixels );
 
 			glGenerateMipmap( GL_TEXTURE_2D );
@@ -492,36 +561,43 @@ namespace Cynthia
 		/**
 		* Frees image data
 		*/
-		void freeData ( )
+		void freeImg ( )
 		{
 			stbi_image_free( m_pixels );
-			resetData( );
+			resetImg( );
 		}
 
 		/**
 		* Resets image data
 		* essential after freeing image data
 		*/
-		void resetData ( )
+		void resetImg ( )
 		{
 			if ( m_isReset )
+			{
+				m_isReset = false;
 				return;
+			}
 			m_width         = 0;
 			m_height        = 0;
 			m_textureLoaded = false;
-			m_textureId     = NULL;
+			m_textureID     = NULL;
 			m_isReset       = true;
-			freeData( );
+			freeImg( );
 		}
 	private:
-		ImageMat< T >        m_image;
-		std::unique_ptr< T > m_pixels;
+		ImageMat< T > m_image;
+		T* m_pixels;
 		int                  m_width;
 		int                  m_height;
 		bool                 m_textureLoaded;
 		bool                 m_isReset;
-		GLuint               m_textureId;
+		GLuint               m_textureID;
 		Channel              m_colorChannel;
+		int                  m_colorChannelID;
+		Stack< ImageMat< T>> m_history;
+
+		#endif
 	};
 
 }

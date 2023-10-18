@@ -70,15 +70,19 @@ namespace Cynthia
 
 		float fontSize = 18.0f;// *2.0f;
 
+		#ifdef CY_WORKSPACE_DIR_PATH
 		std::string current_path = CY_WORKSPACE_DIR_PATH "assets/fonts/Open_Sans,Raleway/Open_Sans/static/";
 		std::cout <<  current_path << std::endl;
 		io.Fonts->AddFontFromFileTTF( (current_path + "OpenSans-Bold.ttf").c_str(), fontSize);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF((current_path + "OpenSans-Regular.ttf").c_str(), fontSize);
+		#else
+		ImGui::SetWindowFontScale(fontSize);
+		#endif
 
 
 		// Setup Dear ImGui style
 		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsClassic();
+//		ImGui::StyleColorsClassic();
 
 		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
 		ImGuiStyle& style = ImGui::GetStyle();
