@@ -34,6 +34,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <utility>
 #include <type_traits>
 #include <iostream>
+#include <future>
+#include <chrono>
 
 
 #ifndef GLAD_CONFIG_H_INCLUDED
@@ -136,7 +138,7 @@ namespace Cynthia
 		Image ( ImageMat< T > image , int width , int height , Channel ch , T* pixels ,
 		        bool texture_loaded , GLuint texture_id , bool is_reset )
 
-			: m_image( image ) ,
+			: m_image( std::move(image) ) ,
 			  m_width( width ) ,
 			  m_height( height ) ,
 			  m_colorChannel( ch ) ,
@@ -320,6 +322,20 @@ namespace Cynthia
 		}
 
 		/**
+		 * Returns reference to pixel container
+		 *
+		 * @param width and height
+		 * */
+		inline Vector< T > & operator() ( int width , int height ) { return m_image( width , height ); }
+
+		/**
+		 * Return reference to pixel within container
+		 *
+		 * @param width, height, and index of pixel within container
+		 * */
+		inline T& operator() ( int width , int height, int i ) { return m_image( width , height, i ); }
+
+		/**
 		 * Spatially smooths the pixels.
 		 * Uses a recursive filter for this operation.
 		 *
@@ -327,9 +343,35 @@ namespace Cynthia
 		 * used to make the subsequent calculations of statistical variations
 		 * promotes accuracy
 		 */
-		Image & blur ( double sigma ) // TODO
+		Image<T> & blur ( double sigma ) // TODO
 		{
 			return *this;
+		}
+
+
+		void invert()
+		{
+			for(int i = 0; i < m_width; i++)
+			{
+				for(int j = 0; j < m_height; j++)
+				{
+					m_image(i,j) = 255 - m_image(i,j);
+				}
+			}
+			update();
+		}
+
+		Image<T> get_invert()
+		{
+			Image<T> temp = *this;
+			for(int i = 0; i < m_width; i++)
+			{
+				for(int j = 0; j < m_height; j++)
+				{
+					temp.m_image(i,j) = 255 - m_image(i,j);
+				}
+			}
+			std::move(temp.getUpdate());
 		}
 
 		/**
@@ -356,7 +398,7 @@ namespace Cynthia
 					gradientNorm[ i ][ j ] = temp;
 				}
 			}
-			return gradientNorm;
+			return std::move(gradientNorm);
 		}
 
 		/**
@@ -393,7 +435,7 @@ namespace Cynthia
 				}
 			}
 			temp.loadTexture( );
-			return temp;
+			return std::move(temp);
 		}
 
 		/**
@@ -454,33 +496,92 @@ namespace Cynthia
 				}
 			}
 
-			return { gradX , gradY };
+			return { std::move(gradX) , std::move(gradY) };
 		}
 
-		inline int cols ( ) const { return m_image.cols( ); }
-		inline int rows ( ) const { return m_image.rows( ); }
+		inline int cols ( ) const noexcept { return m_image.cols( ); }
+		inline int rows ( ) const noexcept { return m_image.rows( ); }
+		inline Vector< T > at ( int i , int j ) { return m_image( i , j ); }
 
 		void loadFromFile ( const std::string & filepath , int channel )
 		{
-			std::cout << "image file path: " << filepath << std::endl;
+			auto start = std::chrono::high_resolution_clock::now( );
 			assert( !filepath.empty( ) && "File path is empty" );
-			m_pixels    = ( T* ) stbi_load( filepath.c_str( ) , &m_width , &m_height , &m_colorChannelID ,
-			                                channel );
-			for ( int i = 0 , step = 0 ; i < m_height ; i++ )
+			m_pixels = ( T* ) stbi_load( filepath.c_str( ) , &m_width , &m_height , &m_colorChannelID ,
+			                             channel );
+			std::cout << "Image height: " << m_height << std::endl;
+			std::cout << "Image width: " << m_width << std::endl;
+//			assert(false);
+			m_image.resize( m_width , m_height );
+			for ( int i = 0 , step = 0 ; i < m_width ; i++ )
 			{
-				for ( int j = 0 ; j < m_width ; j++ )
+				for ( int j = 0 ; j < m_height ; j++ )
 				{
-					Vector< T > pixel( channel );
-					for ( int   k     = 0 ; k < channel ; k++ )
+					Vector< T > pixel;
+					pixel.resize( channel );
+					for ( int k      = 0 ; k < channel ; k++ )
 					{
-						pixel[ k ] = *( m_pixels + step + k );
+						pixel( k ) = *( m_pixels + step + k );
 					}
-					m_image[ i ][ j ] = pixel;
+					m_image( i , j ) = pixel;
 					step += channel;
 				}
 			}
 			loadTexture( );
+			auto stop     = std::chrono::high_resolution_clock::now( );
+			auto duration = std::chrono::duration_cast< std::chrono::microseconds >( stop - start );
+
+			// Output the execution time
+			std::cout << "Time taken by function: " << duration.count( ) << " microseconds" << std::endl;
 		}
+
+		void loadFromFileAsync ( const std::string & filepath , int channel )
+		{ // TODO: not behaving as expected. Func results in SIGSEGV error
+			assert( !filepath.empty( ) && "File path is empty" );
+
+			// Start the timer
+			auto start = std::chrono::high_resolution_clock::now( );
+
+			// Use std::async to launch a separate thread for loading
+			std::future< void > loadingResult = std::async( [ filepath , channel , this ]
+			                                                {
+			                                                  m_pixels = ( T* ) stbi_load( filepath.c_str( ) ,
+			                                                                               &m_width , &m_height ,
+			                                                                               &m_colorChannelID ,
+			                                                                               channel );
+
+			                                                  m_image.resize( m_width , m_height );
+			                                                  for ( int i = 0 , step = 0 ; i < m_width ; i++ )
+			                                                  {
+				                                                  for ( int j = 0 ; j < m_height ; j++ )
+				                                                  {
+					                                                  Vector< T > pixel;
+					                                                  pixel.resize( channel );
+					                                                  for ( int k      = 0 ; k < channel ; k++ )
+					                                                  {
+						                                                  pixel( k ) = *( m_pixels + step + k );
+					                                                  }
+					                                                  m_image( i , j ) = pixel;
+					                                                  step += channel;
+				                                                  }
+			                                                  }
+			                                                  loadTexture( );
+			                                                } );
+
+			// You can perform other tasks here while loading is in progress
+			std::cout << "Loading in progress..." << std::endl;
+			// Wait for the loading thread to finish
+			loadingResult.get( );
+
+			// Stop the timer
+			auto stop = std::chrono::high_resolution_clock::now( );
+
+			// Calculate the duration in microseconds
+			auto duration = std::chrono::duration_cast< std::chrono::microseconds >( stop - start );
+
+			// Output the execution time
+			std::cout << "Time taken by function: " << duration.count( ) << " microseconds" << std::endl;
+		} //
 
 		void free ( )
 		{
@@ -494,26 +595,43 @@ namespace Cynthia
 
 		}
 
-		inline size_t size ( bool with_channel_ID = false )
-		{
-			return with_channel_ID ? m_colorChannelID * cols( ) * rows( ) : cols( ) * rows( );
-		}
+		inline size_t size ( bool with_channel_ID = false ) {return cols( ) * rows( );}
+		inline size_t absSize() { return m_colorChannelID * m_width * m_height; }
 
 
 	private:
+
+		void update()
+		{
+			m_history.push(m_image);
+			for ( int i = 0 , i2 = 0 ; i < m_height ; i++ )
+			{
+				for ( int j = 0 ; j < m_width ; j++ )
+				{
+					for ( int k = 0 ; k < ( int ) m_colorChannel ; k++ )
+					{
+						m_pixels[ i2 + k ] = m_image[ i ][ j ][ k ];
+					}
+					i2++;
+				}
+
+			}
+			this->loadTexture( );
+		}
 
 		/**
 		 * Updates image texture ID
 		 */
 		Image< T > & getUpdate ( )
 		{
+			m_history.push(m_image);
 			for ( int i = 0 , i2 = 0 ; i < m_height ; i++ )
 			{
 				for ( int j = 0 ; j < m_width ; j++ )
 				{
-					for ( int k = 0 ; k < ( int ) m_colorChannel ; k++ , i2++ )
+					for ( int k = 0 ; k < ( int ) m_colorChannel ; k++ )
 					{
-						m_pixels[ i2 ] = m_image[ i ][ j ][ k ];
+						m_pixels[ i2 + k ] = m_image[ i ][ j ][ k ];
 					}
 					i2++;
 				}

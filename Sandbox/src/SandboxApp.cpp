@@ -87,30 +87,8 @@ public:
 		float windowWidth = windowSize.x;
 		float windowHeight = windowSize.y;
 
-		std::ifstream jpegFile((std::string(CY_WORKSPACE_DIR_PATH) + "assets/images/woof.jpeg"), std::ios::binary);
-//		if(!jpegFile.is_open())
-		assert(jpegFile.is_open() && "Unable to open woof.jpeg");
-		const int bufferSize = 1024;
-		char buffer[bufferSize];
-
-		jpegFile.read(buffer, bufferSize);
-		assert(jpegFile.is_open() && "Unable to read woof.jpeg file");
-
-		std::string fileContent(buffer,jpegFile.gcount());
-		// 0xFFD8
-		std::regex jpegHeaderRegex(R"(\xFF\xD8)");
-
-		if(std::regex_search(fileContent, jpegHeaderRegex))
-		{
-			CY_CORE_DEBUG("THIS FILE IS A VALID JPEG FILE");
-		}
-
 
 		ImGui::Image((void*)woofImg->getTextureID(), resize_ui(woofImg->getWidth(), woofImg->getHeight(), f1));
-//		ImGui::Image((void*)woofImg->getTextureID(), resize_ui(woofImg->getWidth(), woofImg->getHeight(), windowWidth, windowHeight));
-
-//		ImGui::Image((void*)woofImg.getTextureID(), resize_ui(woofImg.getWidth(), woofImg.getHeight(), 300));
-//		ImGui::Image((void*)prrrImg.getTextureID(), resize_ui(prrrImg.getWidth(), prrrImg.getHeight(), 300));
 
 		ImGui::End();
 

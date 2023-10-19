@@ -18,6 +18,7 @@
 #include <dirent.h>
 #include <vector>
 #include <string>
+#include <regex>
 
 
 #define ERROR_EXIT( str ) do {fprintf(stderr, str); exit(1);}while(0)
@@ -45,6 +46,22 @@
 
 namespace cute
 {
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+	bool is_file_format(const std::string &filepath, const std::string &extension);
+	static void error_callback ( int error ,
+	                             const char* description );
+	static bool is_path ( const char* path );
+	static bool is_file ( const char* path );
+	static bool is_directory ( const char* path );
+
+#ifdef __cplusplus
+}
+#endif
+
 	static void error_callback ( int error ,
 	                             const char* description )
 	{
@@ -57,6 +74,26 @@ namespace cute
 	{
 		FILES , DIRECTORIES , FILES_AND_DIRECTORIES , MAX_PATH = 256
 	};
+
+	bool is_file_format(const std::string &filepath, const std::string &extension) {
+		std::ifstream file(filepath, std::ios::binary);
+		assert(file.is_open() && "Unable to open file");
+
+		const int bufferSize = 1024;
+		char buffer[bufferSize];
+
+		file.read(buffer, bufferSize);
+		assert(file.is_open() && "Unable to read file");
+
+		std::string fileContent(buffer, file.gcount());
+
+		std::regex headerRegex(extension);
+
+		if (std::regex_search(fileContent, headerRegex))
+			return true;
+
+		return false;
+	}
 
 
 	// validates if path exists in system
